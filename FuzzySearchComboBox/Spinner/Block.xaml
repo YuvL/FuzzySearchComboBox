@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="Controls.Spinner.Block"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Background="Transparent"
+         
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid x:Name="LayoutRoot" RenderTransformOrigin="0.5,0.5">
+        <Grid.LayoutTransform>
+            <TransformGroup>
+                <ScaleTransform ScaleX="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=Scale}" ScaleY="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=Scale}" />
+            </TransformGroup>
+        </Grid.LayoutTransform>
+        <Path Fill="#FF5482A1" Height="29.054" Width="19.826" VerticalAlignment="Bottom" Stretch="Fill" HorizontalAlignment="Center"
+              Data="M16.039116,0 L19.825851,28.400536 19.465179,28.451012 C16.337143,28.84864 13.148972,29.053581 9.9129257,29.053581 6.6768799,29.053581 3.4887085,28.84864 0.360672,28.451012 L0,28.400536 3.7867355,0 4.0096283,0.031188965 C5.9427567,0.27692413 7.9130478,0.40357971 9.9129257,0.40357971 11.912804,0.40357971 13.883095,0.27692413 15.816223,0.031188965 z" RenderTransformOrigin="0.5,0.5" >
+            <Path.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="-22"/>
+                    <RotateTransform/>
+                    <TranslateTransform />
+                </TransformGroup>
+            </Path.RenderTransform>
+        </Path>
+    </Grid>
+</UserControl>

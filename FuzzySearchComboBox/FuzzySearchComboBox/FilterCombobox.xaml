@@ -1,0 +1,237 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:t="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
+
+             xmlns:fc="clr-namespace:WPFControls.FuzzySearchComboBox"
+             xmlns:spinner1="clr-namespace:Controls.Spinner"
+             MouseEnter="OnMouseEnter"
+
+             IsKeyboardFocusWithinChanged="DictionarySearchCombobox_OnIsMouseCaptureWithinChanged"
+             IsMouseCaptureWithinChanged="DictionarySearchCombobox_OnIsMouseCaptureWithinChanged"
+             MouseLeave="OnMouseLeave" DataContextChanged="FilterCombobox_OnDataContextChanged"
+             x:Class="WPFControls.FuzzySearchComboBox.FilterCombobox"
+             mc:Ignorable="d" x:Name="Root" d:DesignWidth="300">
+
+    <UserControl.Resources>
+        <Style x:Key="ComboBoxButton" TargetType="{x:Type ToggleButton}">
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="IsTabStop" Value="false" />
+            <Setter Property="Focusable" Value="true" />
+            <Setter Property="Background" Value="White" />
+            <EventSetter Event="Click" Handler="Button_OnClick" />
+            <EventSetter Event="MouseLeave" Handler="OnMouseLeave" />
+            <EventSetter Event="MouseEnter" Handler="OnMouseEnter" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Width" Value="18" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <t:ButtonChrome x:Name="Chrome" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" RoundCorners="False" RenderMouseOver="{TemplateBinding IsMouseOver}"
+                                        RenderPressed="{TemplateBinding IsPressed}" SnapsToDevicePixels="true">
+                            <Grid>
+                                <spinner1:Spinner Visibility="Hidden" x:Name="Loader" Margin="-40,1,1,1" />
+                                <Path x:Name="Arrow">
+                                    <Path.Style>
+                                        <Style TargetType="Path">
+                                            <Setter Property="Data" Value="M 0 0 L 3.5 4 L 7 0 Z" />
+                                            <Setter Property="Fill" Value="Black" />
+                                            <Setter Property="HorizontalAlignment" Value="Center" />
+                                            <Setter Property="Margin" Value="0,1,0,0" />
+                                            <Setter Property="VerticalAlignment" Value="Center" />
+                                        </Style>
+                                    </Path.Style>
+                                </Path>
+                            </Grid>
+                        </t:ButtonChrome>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="true">
+                                <Setter Property="RenderPressed" TargetName="Chrome" Value="true" />
+                            </Trigger>
+                            <DataTrigger Binding="{Binding Path=IsSearches, RelativeSource={RelativeSource AncestorType=fc:FilterCombobox}}" Value="True">
+                                <Setter TargetName="Loader" Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="InputTextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst" />
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+            <EventSetter Event="PreviewKeyDown" Handler="InputTextBox_OnPreviewKeyDown" />
+            <EventSetter Event="KeyUp" Handler="InputTextBox_OnKeyUp" />
+            <EventSetter Event="TextChanged" Handler="InputTextBox_TextChanged" />
+            <EventSetter Event="MouseEnter" Handler="OnMouseEnter" />
+            <EventSetter Event="MouseLeave" Handler="OnMouseLeave" />
+            <EventSetter Event="GotMouseCapture" Handler="InputTextBox_OnGotMouseCapture" />
+            <EventSetter Event="PreviewGotKeyboardFocus" Handler="InputTextBox_OnPreviewGotKeyboardFocus" />
+            <Setter Property="Validation.ErrorTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <AdornedElementPlaceholder />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=(Validation.HasError), RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                    <Setter Property="Control.Background" Value="#FFFF8080" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <DataTemplate x:Key="CommonItemDataTemplate">
+            <TextBlock Margin="7,0,5,0" Focusable="True" MouseEnter="SearchResultPanelItem_OnMouseEnter" MouseUp="SearchResultPanelItem_OnMouseUp" TextOptions.TextFormattingMode="Display" Text="{Binding}" />
+        </DataTemplate>
+        <DataTemplate x:Key="HeaderItemDataTemplate">
+            <StackPanel HorizontalAlignment="Left" Margin="7,7,5,5">
+                <StackPanel.Style>
+                    <Style>
+                        <Setter Property="ListBoxItem.FocusVisualStyle" Value="{x:Null}" />
+                        <Setter Property="ListBoxItem.BorderBrush" Value="{x:Null}" />
+                        <Setter Property="ListBoxItem.Background" Value="{x:Null}" />
+                        <Setter Property="KeyboardNavigation.IsTabStop" Value="False" />
+                        <Setter Property="ListBoxItem.Focusable" Value="False" />
+                        <Setter Property="ListBoxItem.IsHitTestVisible" Value="False" />
+                        <Setter Property="ListBoxItem.IsTabStop" Value="False" />
+                    </Style>
+                </StackPanel.Style>
+                <TextBlock FontWeight="Bold" Text="{Binding}" />
+                <Rectangle Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Fill="#FF3776A2" />
+            </StackPanel>
+        </DataTemplate>
+        <fc:SearchResultPanelItemDataTemplateSelector x:Key="ItemTemplateSelector"
+                                                                  HeaderItemDataTemplate="{StaticResource HeaderItemDataTemplate}"
+                                                                  CommonItemDataTemplate="{StaticResource CommonItemDataTemplate}" />
+        <Style x:Key="HeaderItemContainerStyleBase" TargetType="ListBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Focusable" Value="True" />
+        </Style>
+        <Style x:Key="HeaderItemContainerStyleHeader" TargetType="ListBoxItem" BasedOn="{StaticResource HeaderItemContainerStyleBase}">
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="Focusable" Value="False" />
+        </Style>
+        <fc:SearchResultPanelItemContainerStyleSelector x:Key="ItemContainerStyleSelector"
+                                                                    CommonStyle="{StaticResource HeaderItemContainerStyleBase}"
+                                                                    HeaderStyle="{StaticResource HeaderItemContainerStyleHeader}" />
+
+        <SolidColorBrush x:Key="ListBorder" Color="#828790" />
+        <Style x:Key="ListBoxStyle" TargetType="{x:Type ListBox}">
+            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ListBorder}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+            <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
+            <Setter Property="ScrollViewer.PanningMode" Value="Both" />
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Height" Value="Auto" />
+            <Setter Property="Focusable" Value="True" />
+            <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True" />
+            <Setter Property="VirtualizingStackPanel.VirtualizationMode" Value="Recycling" />
+            <Setter Property="KeyboardNavigation.DirectionalNavigation" Value="Cycle" />
+            <Setter Property="KeyboardNavigation.TabNavigation" Value="Cycle" />
+            <Setter Property="IsSynchronizedWithCurrentItem" Value="True" />
+
+            <Setter Property="MaxHeight" Value="{Binding MaxDropDownListHeight, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+            <Setter Property="ItemsSource" Value="{Binding SearchResultCollection, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+            <Setter Property="ItemTemplateSelector" Value="{StaticResource ItemTemplateSelector}" />
+            <Setter Property="ItemContainerStyleSelector" Value="{StaticResource ItemContainerStyleSelector}" />
+
+            <EventSetter Event="KeyUp" Handler="SearchResultPanel_OnKeyUp" />
+            <EventSetter Event="PreviewKeyDown" Handler="SearchResultPanel_OnPreviewKeyDown" />
+            <EventSetter Event="MouseMove" Handler="SearchResultPanel_OnMouseMove" />
+            <EventSetter Event="MouseLeave" Handler="OnMouseLeave" />
+            <EventSetter Event="MouseEnter" Handler="OnMouseEnter" />
+            <EventSetter Event="LostKeyboardFocus" Handler="SearchResultPanel_OnLostKeyboardFocus" />
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type fc:SearchResultPanel}">
+                        <Border BorderThickness="{TemplateBinding Border.BorderThickness}"
+                                Padding="{TemplateBinding Control.Padding}"
+                                BorderBrush="{TemplateBinding Border.BorderBrush}"
+                                Background="{TemplateBinding Panel.Background}"
+                                SnapsToDevicePixels="True">
+                            <StackPanel>
+                                <fc:FiltersNotification Text="{Binding RelativeSource={RelativeSource AncestorType=fc:FilterCombobox}, Path=Filters}" />
+                                <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False" Height="{TemplateBinding ActualHeight}" MaxHeight="245">
+                                    <VirtualizingStackPanel IsItemsHost="True" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PopupStyle" TargetType="Popup">
+            <Setter Property="StaysOpen" Value="False" />
+            <Setter Property="VerticalOffset" Value="0.5" />
+            <Setter Property="Focusable" Value="True" />
+            <Setter Property="AllowsTransparency" Value="true" />
+            <Setter Property="Placement" Value="Bottom" />
+            <Setter Property="MinWidth" Value="{Binding RelativeSource={RelativeSource AncestorType=fc:FilterCombobox}, Path=DropDownMinWidth}" />
+            <Setter Property="Width" Value="{Binding ActualWidth, ElementName=InputTextBox}" />
+            <Setter Property="PopupAnimation" Value="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" />
+            <Setter Property="PlacementTarget" Value="{Binding ElementName=InputTextBox}" />
+            <Setter Property="IsOpen" Value="{Binding Path=IsChecked, ElementName=ToggleButton}" />
+            <EventSetter Event="MouseEnter" Handler="OnMouseEnter" />
+            <EventSetter Event="MouseLeave" Handler="OnMouseLeave" />
+        </Style>
+
+        <Style x:Key="NoDataTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,18,0" />
+            <Setter Property="FontStyle" Value="Italic" />
+            <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource AncestorType=fc:FilterCombobox}, Path=NoDataText}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=fc:FilterCombobox}, Path=NoData}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="RootGridStyle" TargetType="Grid">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=fc:FilterCombobox}, Path=NoData}" Value="True">
+                    <Setter Property="IsEnabled" Value="False"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Validation.ErrorTemplate>
+        <ControlTemplate>
+            <AdornedElementPlaceholder />
+        </ControlTemplate>
+    </Validation.ErrorTemplate>
+
+    <Grid Style="{StaticResource RootGridStyle}" Margin="0" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="23" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <!--InputTextBox-->
+        <TextBox Grid.Row="0" x:Name="InputTextBox" Margin="0" Style="{StaticResource InputTextBoxStyle}" Text="{Binding RelativeSource={RelativeSource AncestorType=fc:FilterCombobox}, Path=Text, Mode=TwoWay}" />
+        <!--NoDataTextBlock-->
+        <TextBlock Grid.Row="0" Margin="0"  Style="{StaticResource NoDataTextBlockStyle}" />
+        <!--Button-->
+        <ToggleButton Grid.Row="0" ClickMode="Press" Name="ToggleButton" Style="{StaticResource ComboBoxButton}" />
+        <!--DropDownList-->
+        <Popup Focusable="False" KeyboardNavigation.IsTabStop="False" x:Name="PopupPanel" Grid.Row="0" Style="{StaticResource PopupStyle}" Closed="PopupPanel_OnClosed">
+            <StackPanel d:IsLocked="True">
+                <!--<themes:SystemDropShadowChrome Color="Transparent" MouseLeave="OnMouseLeave" MouseEnter="OnMouseEnter" Width="{Binding ActualWidth, ElementName=InputTextBox}">-->
+                <fc:SearchResultPanel x:Name="SearchResultPanel" Style="{StaticResource ListBoxStyle}" />
+                <!--</themes:SystemDropShadowChrome>-->
+            </StackPanel>
+        </Popup>
+    </Grid>
+</UserControl>
