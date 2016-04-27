@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>FuzzySearchComboBox</id>
+    <version>$version$</version>
+    <title>FuzzySearchComboBox</title>
+    <authors>Yuri Vlasov</authors>
+    <owners></owners>
+    <projectUrl>https://github.com/YuvL/FuzzySearchComboBox.git</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>FuzzySearchComboBox</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2016</copyright>
+  </metadata>
+  <files>
+     <file src="lib\Controls.dll" target="lib\"/>
+  </files>
+</package>
