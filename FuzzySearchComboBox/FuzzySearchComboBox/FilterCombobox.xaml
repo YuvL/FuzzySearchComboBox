@@ -4,14 +4,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:t="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
 
-             xmlns:fc="clr-namespace:WPFControls.FuzzySearchComboBox"
+             xmlns:fc="clr-namespace:Controls.FuzzySearchComboBox"
              xmlns:spinner1="clr-namespace:Controls.Spinner"
              MouseEnter="OnMouseEnter"
 
              IsKeyboardFocusWithinChanged="DictionarySearchCombobox_OnIsMouseCaptureWithinChanged"
              IsMouseCaptureWithinChanged="DictionarySearchCombobox_OnIsMouseCaptureWithinChanged"
              MouseLeave="OnMouseLeave" DataContextChanged="FilterCombobox_OnDataContextChanged"
-             x:Class="WPFControls.FuzzySearchComboBox.FilterCombobox"
+             x:Class="Controls.FuzzySearchComboBox.FilterCombobox"
              mc:Ignorable="d" x:Name="Root" d:DesignWidth="300">
 
     <UserControl.Resources>

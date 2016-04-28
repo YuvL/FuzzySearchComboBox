@@ -6,10 +6,10 @@ namespace Controls
 {
     public static class LoggerFactory
     {
-        static readonly Logger<global::WPFControls.FuzzySearchComboBox.FilterCombobox> Logger;
+        static readonly Logger<global::Controls.FuzzySearchComboBox.FilterCombobox> Logger;
         static LoggerFactory()
         { 
-            Logger = new Logger<global::WPFControls.FuzzySearchComboBox.FilterCombobox>();
+            Logger = new Logger<global::Controls.FuzzySearchComboBox.FilterCombobox>();
 
             var configFile = new FileInfo("log4net.config");
             log4net.Config.XmlConfigurator.Configure(configFile);

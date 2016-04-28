@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 // ReSharper disable once CheckNamespace
-namespace WPFControls.FuzzySearchComboBox
+namespace Controls.FuzzySearchComboBox
 {
     public enum ResultType
     {

@@ -4,7 +4,7 @@ using System.Windows.Controls;
 
 // ReSharper disable once CheckNamespace
 
-namespace WPFControls.FuzzySearchComboBox
+namespace Controls.FuzzySearchComboBox
 {
     /// <summary>
     /// Interaction logic for FiltersNotification.xaml

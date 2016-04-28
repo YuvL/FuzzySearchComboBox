@@ -9,12 +9,11 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using Controls;
 using Timer = System.Timers.Timer;
 
 // ReSharper disable once CheckNamespace
 
-namespace WPFControls.FuzzySearchComboBox
+namespace Controls.FuzzySearchComboBox
 {
     public partial class FilterCombobox : INotifyPropertyChanged
     {

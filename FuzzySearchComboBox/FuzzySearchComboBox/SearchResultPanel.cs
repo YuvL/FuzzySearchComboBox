@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
 // ReSharper disable once CheckNamespace
-namespace WPFControls.FuzzySearchComboBox
+namespace Controls.FuzzySearchComboBox
 {
     public class SearchResultPanel : ListBox
     {
