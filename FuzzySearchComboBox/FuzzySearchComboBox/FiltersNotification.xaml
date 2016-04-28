@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:filterCombobox="clr-namespace:Controls.FuzzySearchComboBox"
+             xmlns:fuzzySearchCombobox="clr-namespace:Controls.FuzzySearchComboBox"
              Name="RootControl"
              mc:Ignorable="d" >
     <Border  BorderThickness="1" Background="#FFFFF7ED" BorderBrush="#FFDED4C0">
@@ -15,7 +15,7 @@
                 </Style>
             </StackPanel.Resources>
             <TextBlock Text="Отфильтровано по: "/>
-            <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=filterCombobox:FiltersNotification}, Path=Text, Mode=TwoWay}"  TextWrapping="Wrap" TextOptions.TextFormattingMode="Display"/>
+            <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=fuzzySearchCombobox:FiltersNotification}, Path=Text, Mode=TwoWay}"  TextWrapping="Wrap" TextOptions.TextFormattingMode="Display"/>
         </StackPanel>
     </Border>
 </UserControl>

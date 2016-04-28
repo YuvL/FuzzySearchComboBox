@@ -15,7 +15,7 @@ using Timer = System.Timers.Timer;
 
 namespace Controls.FuzzySearchComboBox
 {
-    public partial class FilterCombobox : INotifyPropertyChanged
+    public partial class FuzzySearchCombobox : INotifyPropertyChanged
     {
         public ResultItem AlwaysShow { get; private set; }
 
@@ -41,7 +41,7 @@ namespace Controls.FuzzySearchComboBox
             }
         }
 
-        public static IEnumerable<FilterCombobox> Comboboxes { get; private set; }
+        public static IEnumerable<FuzzySearchCombobox> Comboboxes { get; private set; }
 
         public int CountToOutputValues { get { return (int)GetValue(CountToOutputValuesProperty); } set { SetValue(CountToOutputValuesProperty, value); } }
 
@@ -188,53 +188,53 @@ namespace Controls.FuzzySearchComboBox
         public static readonly ILogger Logger = LoggerFactory.GetLogger();
         private static readonly char[] WordSplitters = "\t,.; ".ToCharArray();
 
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(Dictionary<int, string>), typeof(FilterCombobox),
+        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(Dictionary<int, string>), typeof(FuzzySearchCombobox),
             new PropertyMetadata(default(Dictionary<int, string>), ItemsSourcePropertyChangedCallback));
 
-        public static readonly DependencyProperty ParentItemsSourceProperty = DependencyProperty.Register("ParentItemsSource", typeof(Dictionary<int?, ValueContainer>), typeof(FilterCombobox),
+        public static readonly DependencyProperty ParentItemsSourceProperty = DependencyProperty.Register("ParentItemsSource", typeof(Dictionary<int?, ValueContainer>), typeof(FuzzySearchCombobox),
             new PropertyMetadata(default(Dictionary<int?, ValueContainer>), ParentItemSourceChangedCallBack));
 
-        public static readonly DependencyProperty ChildItemsSourceProperty = DependencyProperty.Register("ChildItemsSource", typeof(Dictionary<int?, ValueContainer>), typeof(FilterCombobox),
+        public static readonly DependencyProperty ChildItemsSourceProperty = DependencyProperty.Register("ChildItemsSource", typeof(Dictionary<int?, ValueContainer>), typeof(FuzzySearchCombobox),
             new PropertyMetadata(default(Dictionary<int?, ValueContainer>), ChildItemSourceChangedCallBack));
 
-        public static readonly DependencyProperty InternalItemsSourceProperty = DependencyProperty.Register("InternalItemsSource", typeof(Dictionary<int?, ValueContainer>), typeof(FilterCombobox),
+        public static readonly DependencyProperty InternalItemsSourceProperty = DependencyProperty.Register("InternalItemsSource", typeof(Dictionary<int?, ValueContainer>), typeof(FuzzySearchCombobox),
             new PropertyMetadata(default(Dictionary<int?, ValueContainer>), InternalItemsSourceChangedCallBack));
 
-        public static readonly DependencyProperty CheckedProperty = DependencyProperty.Register("Checked", typeof(bool), typeof(FilterCombobox), new PropertyMetadata(default(bool)));
+        public static readonly DependencyProperty CheckedProperty = DependencyProperty.Register("Checked", typeof(bool), typeof(FuzzySearchCombobox), new PropertyMetadata(default(bool)));
 
-        public static readonly DependencyProperty ChildItemsProperty = DependencyProperty.Register("Childs", typeof(Dictionary<int?, ValueContainer>), typeof(FilterCombobox),
+        public static readonly DependencyProperty ChildItemsProperty = DependencyProperty.Register("Childs", typeof(Dictionary<int?, ValueContainer>), typeof(FuzzySearchCombobox),
             new PropertyMetadata(default(Dictionary<int?, ValueContainer>)));
 
-        public static readonly DependencyProperty CountToOutputValuesProperty = DependencyProperty.Register("CountToOutputValues", typeof(int), typeof(FilterCombobox), new UIPropertyMetadata(DefaultNumberOutputValues));
+        public static readonly DependencyProperty CountToOutputValuesProperty = DependencyProperty.Register("CountToOutputValues", typeof(int), typeof(FuzzySearchCombobox), new UIPropertyMetadata(DefaultNumberOutputValues));
 
-        public static readonly DependencyProperty IsValidProperty = DependencyProperty.Register("IsValid", typeof(bool), typeof(FilterCombobox), new PropertyMetadata(true));
+        public static readonly DependencyProperty IsValidProperty = DependencyProperty.Register("IsValid", typeof(bool), typeof(FuzzySearchCombobox), new PropertyMetadata(true));
 
-        public static readonly DependencyProperty MaxDropDownListHeightProperty = DependencyProperty.Register("MaxDropDownListHeight", typeof(int), typeof(FilterCombobox), new PropertyMetadata(DefaultMaxDropDownHeight));
+        public static readonly DependencyProperty MaxDropDownListHeightProperty = DependencyProperty.Register("MaxDropDownListHeight", typeof(int), typeof(FuzzySearchCombobox), new PropertyMetadata(DefaultMaxDropDownHeight));
 
-        public static readonly DependencyProperty ParentItemsProperty = DependencyProperty.Register("ParentItems", typeof(Dictionary<int?, ValueContainer>), typeof(FilterCombobox),
+        public static readonly DependencyProperty ParentItemsProperty = DependencyProperty.Register("ParentItems", typeof(Dictionary<int?, ValueContainer>), typeof(FuzzySearchCombobox),
             new PropertyMetadata(default(Dictionary<int?, ValueContainer>)));
 
-        public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register("SelectedItem", typeof(KeyValuePair<int?, ValueContainer>?), typeof(FilterCombobox),
+        public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register("SelectedItem", typeof(KeyValuePair<int?, ValueContainer>?), typeof(FuzzySearchCombobox),
             new PropertyMetadata(default(KeyValuePair<int?, ValueContainer>?), SelectedItemChangedCallBack));
 
-        public static readonly DependencyProperty SelectedKeyProperty = DependencyProperty.Register("SelectedKey", typeof(int?), typeof(FilterCombobox), new PropertyMetadata(default(int?), SelectedKeyChangedCallBack));
+        public static readonly DependencyProperty SelectedKeyProperty = DependencyProperty.Register("SelectedKey", typeof(int?), typeof(FuzzySearchCombobox), new PropertyMetadata(default(int?), SelectedKeyChangedCallBack));
 
-        public static readonly DependencyProperty SearchResultCollectionProperty = DependencyProperty.Register("SearchResultCollection", typeof(ICollectionView), typeof(FilterCombobox),
+        public static readonly DependencyProperty SearchResultCollectionProperty = DependencyProperty.Register("SearchResultCollection", typeof(ICollectionView), typeof(FuzzySearchCombobox),
             new PropertyMetadata(default(ICollectionView)));
 
-        public static readonly DependencyProperty SelectedValueProperty = DependencyProperty.Register("SelectedValue", typeof(ValueContainer), typeof(FilterCombobox), new PropertyMetadata(default(ValueContainer)));
+        public static readonly DependencyProperty SelectedValueProperty = DependencyProperty.Register("SelectedValue", typeof(ValueContainer), typeof(FuzzySearchCombobox), new PropertyMetadata(default(ValueContainer)));
 
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(FilterCombobox), new PropertyMetadata(default(string), TextPropertyChangedCallback));
+        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata(default(string), TextPropertyChangedCallback));
 
-        public static readonly DependencyProperty NoDataTextProperty = DependencyProperty.Register("NoDataText", typeof(string), typeof(FilterCombobox), new PropertyMetadata(NoDataTextDefault));
+        public static readonly DependencyProperty NoDataTextProperty = DependencyProperty.Register("NoDataText", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata(NoDataTextDefault));
 
-        static FilterCombobox()
+        static FuzzySearchCombobox()
         {
-            EventManager.RegisterClassHandler(typeof(FilterCombobox), Mouse.MouseWheelEvent, new MouseWheelEventHandler(OnMouseWheel), true);
+            EventManager.RegisterClassHandler(typeof(FuzzySearchCombobox), Mouse.MouseWheelEvent, new MouseWheelEventHandler(OnMouseWheel), true);
             Comboboxes = new WeakReferenceCollection();
         }
 
-        public FilterCombobox()
+        public FuzzySearchCombobox()
         {
             InitializeComponent();
             var weakReferenceCollection = (WeakReferenceCollection)Comboboxes;
@@ -254,10 +254,10 @@ namespace Controls.FuzzySearchComboBox
                 SearchResultCollection.Refresh();
             };
 
-            Loaded += OnFilterComboboxLoaded;
+            Loaded += OnFuzzySearchComboboxLoaded;
             BounceProtectionDelay = DefaultBounceProtectionDelay;
-            _filterComboboxCreatedAt = DateTime.Now.ToString("HH:mm:ss.fff");
-            Logger.DebugFormat(LoggingMessages.FilterComboBoxCreatedFormat, NameForDebug);
+            _fuzzySearchComboboxCreatedAt = DateTime.Now.ToString("HH:mm:ss.fff");
+            Logger.DebugFormat(LoggingMessages.FuzzySearchComboBoxCreatedFormat, NameForDebug);
         }
 
         protected virtual void OnPropertyChanged(string propertyName = null)
@@ -269,9 +269,9 @@ namespace Controls.FuzzySearchComboBox
         public event PropertyChangedEventHandler PropertyChanged;
 
         private static readonly Func<DependencyObject, bool> ItIsContentControl = x => x is ContentControl && !x.GetType().IsSubclassOf(typeof(ContentControl));
-        private static IEnumerable<FilterCombobox> GetDependentComboboxes(FilterCombobox target)
+        private static IEnumerable<FuzzySearchCombobox> GetDependentComboboxes(FuzzySearchCombobox target)
         {
-            Func<FilterCombobox, bool> inSameOrWithoutDataTemplate = combobox =>
+            Func<FuzzySearchCombobox, bool> inSameOrWithoutDataTemplate = combobox =>
             {
                 var parentOfThisCombobox = combobox.VisualTreeParents.FirstOrDefault(ItIsContentControl);
                 var parentOfOtherCombobox = target.VisualTreeParents.FirstOrDefault(ItIsContentControl);
@@ -287,7 +287,7 @@ namespace Controls.FuzzySearchComboBox
             return groups;
         }
 
-        private void OnFilterComboboxLoaded(object sender, RoutedEventArgs e)
+        private void OnFuzzySearchComboboxLoaded(object sender, RoutedEventArgs e)
         {
             DependencyObject current = this;
             while ((current = VisualTreeHelper.GetParent(current)) != null)
@@ -298,7 +298,7 @@ namespace Controls.FuzzySearchComboBox
 
         private static void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            var comboBox = (FilterCombobox)sender;
+            var comboBox = (FuzzySearchCombobox)sender;
             if (comboBox.IsMouseOver)
                 return;
 
@@ -314,21 +314,21 @@ namespace Controls.FuzzySearchComboBox
         private static void SelectedKeyChangedCallBack(DependencyObject o, DependencyPropertyChangedEventArgs args)
         {
             var key = (int?)args.NewValue;
-            ((FilterCombobox)o).SetSelectedItem(key);
+            ((FuzzySearchCombobox)o).SetSelectedItem(key);
         }
 
         private static void SelectedItemChangedCallBack(DependencyObject o, DependencyPropertyChangedEventArgs args)
         {
             var item = args.NewValue as KeyValuePair<int?, ValueContainer>?;
-            var filterCombobox = ((FilterCombobox)o);
-            filterCombobox.SetSelectedItem(item);
+            var fuzzySearchCombobox = ((FuzzySearchCombobox)o);
+            fuzzySearchCombobox.SetSelectedItem(item);
 
-            Logger.DebugFormat(LoggingMessages.SelectedItemSettedTo, item != null && item.Value.Value != null ? item.Value.Value.ToString() : "null", filterCombobox.NameForDebug);
+            Logger.DebugFormat(LoggingMessages.SelectedItemSettedTo, item != null && item.Value.Value != null ? item.Value.Value.ToString() : "null", fuzzySearchCombobox.NameForDebug);
         }
 
         private static void ParentItemSourceChangedCallBack(DependencyObject o, DependencyPropertyChangedEventArgs args)
         {
-            var dependencyObject = (FilterCombobox)o;
+            var dependencyObject = (FuzzySearchCombobox)o;
 
             Logger.DebugFormat(LoggingMessages.ParentItemSourceChangedInCombobox, dependencyObject.NameForDebug);
 
@@ -370,7 +370,7 @@ namespace Controls.FuzzySearchComboBox
 
         private static void ChildItemSourceChangedCallBack(DependencyObject o, DependencyPropertyChangedEventArgs args)
         {
-            var dependencyObject = (FilterCombobox)o;
+            var dependencyObject = (FuzzySearchCombobox)o;
             var childItemSource = args.NewValue as Dictionary<int?, ValueContainer>;
 
             if (childItemSource == null)
@@ -390,7 +390,7 @@ namespace Controls.FuzzySearchComboBox
 
         private static void ItemsSourcePropertyChangedCallback(DependencyObject o, DependencyPropertyChangedEventArgs args)
         {
-            var dependencyObject = (FilterCombobox)o;
+            var dependencyObject = (FuzzySearchCombobox)o;
 
             //проверка типа
             var typeMatch = args.NewValue is Dictionary<int, string>;
@@ -408,7 +408,7 @@ namespace Controls.FuzzySearchComboBox
 
         private static void InternalItemsSourceChangedCallBack(DependencyObject o, DependencyPropertyChangedEventArgs args)
         {
-            var dependencyObject = (FilterCombobox)o;
+            var dependencyObject = (FuzzySearchCombobox)o;
 
             //отключим ComboBox если отсутствуют элементы для поиска -> отображения
             var nothingToShow = dependencyObject.InternalItemsSource == null || dependencyObject.InternalItemsSource.All(x => x.Value.IsDeleted) ||
@@ -426,7 +426,7 @@ namespace Controls.FuzzySearchComboBox
 
         private static void TextPropertyChangedCallback(DependencyObject o, DependencyPropertyChangedEventArgs args)
         {
-            var combobox = (FilterCombobox)o;
+            var combobox = (FuzzySearchCombobox)o;
             var value = args.NewValue as string;
             if (combobox.SelectedKey == null)
             {
@@ -921,7 +921,7 @@ namespace Controls.FuzzySearchComboBox
             PopupPanel.StaysOpen = IsMouseOver;
         }
 
-        private void FilterCombobox_OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void FuzzySearchCombobox_OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             AlwaysShow = null;
         }
@@ -929,7 +929,7 @@ namespace Controls.FuzzySearchComboBox
         private readonly ResultItem _allItemsHeader = new ResultItem(ResultType.All);
 
         //for debug
-        private readonly string _filterComboboxCreatedAt;
+        private readonly string _fuzzySearchComboboxCreatedAt;
         private readonly ResultItem _fuzzyHeader = new ResultItem(ResultType.Fuzzy);
         private readonly ResultItem _renamedItemsHeader = new ResultItem(ResultType.Renamed);
         private readonly ResultItem _strongHeader = new ResultItem(ResultType.Strong);
@@ -961,7 +961,7 @@ namespace Controls.FuzzySearchComboBox
         {
             get
             {
-                var nameForDebug = string.Format("{0}-{1}-{2}", GroupName ?? "UntitledGroup", Name ?? "Untitled", _filterComboboxCreatedAt);
+                var nameForDebug = string.Format("{0}-{1}-{2}", GroupName ?? "UntitledGroup", Name ?? "Untitled", _fuzzySearchComboboxCreatedAt);
                 return nameForDebug;
             }
         }
