@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="WPFControls.FuzzySearchComboBox.FiltersNotification"
+﻿<UserControl x:Class="Controls.FuzzySearchComboBox.FiltersNotification"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:filterCombobox="clr-namespace:WPFControls.FuzzySearchComboBox"
+             xmlns:filterCombobox="clr-namespace:Controls.FuzzySearchComboBox"
              Name="RootControl"
              mc:Ignorable="d" >
     <Border  BorderThickness="1" Background="#FFFFF7ED" BorderBrush="#FFDED4C0">

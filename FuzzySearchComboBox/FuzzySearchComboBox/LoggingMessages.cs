@@ -1,4 +1,4 @@
-namespace WPFControls.FuzzySearchComboBox
+namespace Controls.FuzzySearchComboBox
 {
     internal static class LoggingMessages
     {

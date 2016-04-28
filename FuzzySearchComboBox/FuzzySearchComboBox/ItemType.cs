@@ -1,4 +1,4 @@
-namespace WPFControls.FuzzySearchComboBox
+namespace Controls.FuzzySearchComboBox
 {
     public enum ItemType
     {

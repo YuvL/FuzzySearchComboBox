@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using Controls.FuzzySearchComboBox;
 
 // ReSharper disable once CheckNamespace
-namespace WPFControls.FuzzySearchComboBox
+namespace Controls.FuzzySearchComboBox
 {
     [ValueConversion(typeof(ResultType), typeof(string))]
     public class ResultTypeConverter : BaseConverter, IValueConverter

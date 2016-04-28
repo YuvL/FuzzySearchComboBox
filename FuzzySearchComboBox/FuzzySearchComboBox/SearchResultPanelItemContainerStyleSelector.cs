@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 
 // ReSharper disable once CheckNamespace
-namespace WPFControls.FuzzySearchComboBox
+namespace Controls.FuzzySearchComboBox
 {
     public class SearchResultPanelItemContainerStyleSelector : StyleSelector
     {
