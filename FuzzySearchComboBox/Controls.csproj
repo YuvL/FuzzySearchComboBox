@@ -56,8 +56,8 @@
     <Compile Include="FuzzySearchComboBox\WeakReferenceCollection.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="FuzzySearchComboBox\ExtensionMethods.cs" />
-    <Compile Include="FuzzySearchComboBox\FilterCombobox.cs">
-      <DependentUpon>FilterCombobox.xaml</DependentUpon>
+    <Compile Include="FuzzySearchComboBox\FuzzySearchCombobox.xaml.cs">
+      <DependentUpon>FuzzySearchCombobox.xaml</DependentUpon>
     </Compile>
     <Compile Include="FuzzySearchComboBox\FiltersNotification.cs">
       <DependentUpon>FiltersNotification.xaml</DependentUpon>
@@ -78,7 +78,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="FuzzySearchComboBox\FilterCombobox.xaml">
+    <Page Include="FuzzySearchComboBox\FuzzySearchCombobox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

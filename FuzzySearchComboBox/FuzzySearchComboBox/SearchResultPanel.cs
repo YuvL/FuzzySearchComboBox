@@ -33,9 +33,9 @@ namespace Controls.FuzzySearchComboBox
             //   item.BringIntoView();
         }
 
-        public void FocusItem(FilterCombobox.ResultItem selection)
+        public void FocusItem(FuzzySearchCombobox.ResultItem selection)
         {
-            if (ItemsSource == null || !ItemsSource.OfType<FilterCombobox.ResultItem>().Any())
+            if (ItemsSource == null || !ItemsSource.OfType<FuzzySearchCombobox.ResultItem>().Any())
                 return;
 
             while (true)

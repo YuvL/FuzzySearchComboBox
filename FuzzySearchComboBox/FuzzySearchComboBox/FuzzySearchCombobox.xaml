@@ -10,8 +10,8 @@
 
              IsKeyboardFocusWithinChanged="DictionarySearchCombobox_OnIsMouseCaptureWithinChanged"
              IsMouseCaptureWithinChanged="DictionarySearchCombobox_OnIsMouseCaptureWithinChanged"
-             MouseLeave="OnMouseLeave" DataContextChanged="FilterCombobox_OnDataContextChanged"
-             x:Class="Controls.FuzzySearchComboBox.FilterCombobox"
+             MouseLeave="OnMouseLeave" DataContextChanged="FuzzySearchCombobox_OnDataContextChanged"
+             x:Class="Controls.FuzzySearchComboBox.FuzzySearchCombobox"
              mc:Ignorable="d" x:Name="Root" d:DesignWidth="300">
 
     <UserControl.Resources>
@@ -49,7 +49,7 @@
                             <Trigger Property="IsChecked" Value="true">
                                 <Setter Property="RenderPressed" TargetName="Chrome" Value="true" />
                             </Trigger>
-                            <DataTrigger Binding="{Binding Path=IsSearches, RelativeSource={RelativeSource AncestorType=fc:FilterCombobox}}" Value="True">
+                            <DataTrigger Binding="{Binding Path=IsSearches, RelativeSource={RelativeSource AncestorType=fc:FuzzySearchCombobox}}" Value="True">
                                 <Setter TargetName="Loader" Property="Visibility" Value="Visible" />
                             </DataTrigger>
                         </ControlTemplate.Triggers>
@@ -158,7 +158,7 @@
                                 Background="{TemplateBinding Panel.Background}"
                                 SnapsToDevicePixels="True">
                             <StackPanel>
-                                <fc:FiltersNotification Text="{Binding RelativeSource={RelativeSource AncestorType=fc:FilterCombobox}, Path=Filters}" />
+                                <fc:FiltersNotification Text="{Binding RelativeSource={RelativeSource AncestorType=fc:FuzzySearchCombobox}, Path=Filters}" />
                                 <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False" Height="{TemplateBinding ActualHeight}" MaxHeight="245">
                                     <VirtualizingStackPanel IsItemsHost="True" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                                 </ScrollViewer>
@@ -175,7 +175,7 @@
             <Setter Property="Focusable" Value="True" />
             <Setter Property="AllowsTransparency" Value="true" />
             <Setter Property="Placement" Value="Bottom" />
-            <Setter Property="MinWidth" Value="{Binding RelativeSource={RelativeSource AncestorType=fc:FilterCombobox}, Path=DropDownMinWidth}" />
+            <Setter Property="MinWidth" Value="{Binding RelativeSource={RelativeSource AncestorType=fc:FuzzySearchCombobox}, Path=DropDownMinWidth}" />
             <Setter Property="Width" Value="{Binding ActualWidth, ElementName=InputTextBox}" />
             <Setter Property="PopupAnimation" Value="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" />
             <Setter Property="PlacementTarget" Value="{Binding ElementName=InputTextBox}" />
@@ -191,9 +191,9 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="0,0,18,0" />
             <Setter Property="FontStyle" Value="Italic" />
-            <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource AncestorType=fc:FilterCombobox}, Path=NoDataText}"/>
+            <Setter Property="Text" Value="{Binding RelativeSource={RelativeSource AncestorType=fc:FuzzySearchCombobox}, Path=NoDataText}"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=fc:FilterCombobox}, Path=NoData}" Value="True">
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=fc:FuzzySearchCombobox}, Path=NoData}" Value="True">
                     <Setter Property="Visibility" Value="Visible"/>
                 </DataTrigger>
             </Style.Triggers>
@@ -201,7 +201,7 @@
 
         <Style x:Key="RootGridStyle" TargetType="Grid">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=fc:FilterCombobox}, Path=NoData}" Value="True">
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=fc:FuzzySearchCombobox}, Path=NoData}" Value="True">
                     <Setter Property="IsEnabled" Value="False"/>
                 </DataTrigger>
             </Style.Triggers>
@@ -220,7 +220,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <!--InputTextBox-->
-        <TextBox Grid.Row="0" x:Name="InputTextBox" Margin="0" Style="{StaticResource InputTextBoxStyle}" Text="{Binding RelativeSource={RelativeSource AncestorType=fc:FilterCombobox}, Path=Text, Mode=TwoWay}" />
+        <TextBox Grid.Row="0" x:Name="InputTextBox" Margin="0" Style="{StaticResource InputTextBoxStyle}" Text="{Binding RelativeSource={RelativeSource AncestorType=fc:FuzzySearchCombobox}, Path=Text, Mode=TwoWay}" />
         <!--NoDataTextBlock-->
         <TextBlock Grid.Row="0" Margin="0"  Style="{StaticResource NoDataTextBlockStyle}" />
         <!--Button-->

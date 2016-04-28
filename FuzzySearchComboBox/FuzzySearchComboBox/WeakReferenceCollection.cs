@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Controls.FuzzySearchComboBox
 {
-    internal class WeakReferenceCollection : IEnumerable<FilterCombobox>
+    internal class WeakReferenceCollection : IEnumerable<FuzzySearchCombobox>
     {
         private readonly List<WeakReference> _internalCollection = new List<WeakReference>();
 
@@ -27,9 +27,9 @@ namespace Controls.FuzzySearchComboBox
             }
         }
 
-        public IEnumerator<FilterCombobox> GetEnumerator()
+        public IEnumerator<FuzzySearchCombobox> GetEnumerator()
         {
-            return InternalCollection.Select(x => x.Target as FilterCombobox).GetEnumerator();
+            return InternalCollection.Select(x => x.Target as FuzzySearchCombobox).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -37,9 +37,9 @@ namespace Controls.FuzzySearchComboBox
             return GetEnumerator();
         }
 
-        public void Add(FilterCombobox filterCombobox)
+        public void Add(FuzzySearchCombobox fuzzySearchCombobox)
         {
-            InternalCollection.Add(new WeakReference(filterCombobox));
+            InternalCollection.Add(new WeakReference(fuzzySearchCombobox));
         }
     }
 }

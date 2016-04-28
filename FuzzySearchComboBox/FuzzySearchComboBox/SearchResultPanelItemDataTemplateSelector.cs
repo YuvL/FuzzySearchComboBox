@@ -11,7 +11,7 @@ namespace Controls.FuzzySearchComboBox
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            var resultItem = item as FilterCombobox.ResultItem;
+            var resultItem = item as FuzzySearchCombobox.ResultItem;
             if (resultItem == null) return null;
 
             switch (resultItem.ItemType)
