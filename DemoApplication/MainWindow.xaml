@@ -7,12 +7,16 @@
         xmlns:views="clr-namespace:DemoApplication.Views"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
+    <Window.Resources>
+        <DataTemplate x:Key="theAddress">
+            <views:AddressView />
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
         <TabControl>
             <TabItem Header="Address">
-                <views:AddressView />
+                <ContentControl ContentTemplate="{StaticResource theAddress}"/>
             </TabItem>
         </TabControl>
-
     </Grid>
 </Window>

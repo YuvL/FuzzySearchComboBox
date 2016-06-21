@@ -5,11 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DemoApplication.Views"
              xmlns:fuzzySearchComboBox="clr-namespace:Controls.FuzzySearchComboBox;assembly=Controls"
+             xmlns:viewModels="clr-namespace:DemoApplication.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <Style TargetType="Label" BasedOn="{StaticResource CommonStyle}"/>
-        <Style TargetType="fuzzySearchComboBox:FuzzySearchCombobox" BasedOn="{StaticResource CommonStyle}"/>
+        <Style TargetType="{x:Type fuzzySearchComboBox:FuzzySearchCombobox}" BasedOn="{StaticResource CommonStyle}"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -25,20 +26,25 @@
         <Label  Grid.Row="0" Grid.Column="0" Content="Country"/>
         <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="0" Grid.Column="1"
             Name="CountryCombobox"
+            GroupName="1C3717ED-F297-4EE2-A42E-676F86016CAF"
             ParentItemsSource="{Binding AddressDictionary}"
             ChildItemsSource="{Binding ElementName=RegionCombobox, Path=ParentItems}"
             SelectedKey="{Binding CountryID, ValidatesOnDataErrors=True, Mode=TwoWay}"/>
-        
+
         <Label  Grid.Row="1" Grid.Column="0" Content="Region"/>
         <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="1" Grid.Column="1"
             Name="RegionCombobox"
+            GroupName="1C3717ED-F297-4EE2-A42E-676F86016CAF"
+            CountToOutputValues="5"
             ParentItemsSource="{Binding ElementName=CountryCombobox, Path=ChildItems}"
-            ChildItemsSource="{Binding ElementName=CityCombobox,Path=ParentItems}"
+            ChildItemsSource="{Binding ElementName=CityCombobox, Path=ParentItems}"
             SelectedKey="{Binding RegionID, ValidatesOnDataErrors=True, Mode=TwoWay}"/>
 
         <Label  Grid.Row="2" Grid.Column="0" Content="City"/>
         <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="2" Grid.Column="1"
             Name="CityCombobox"
+            GroupName="1C3717ED-F297-4EE2-A42E-676F86016CAF"
+            CountToOutputValues="15"
             ParentItemsSource="{Binding ElementName=RegionCombobox, Path=ChildItems}"
             SelectedKey="{Binding CityID, ValidatesOnDataErrors=True, Mode=TwoWay}"/>
 

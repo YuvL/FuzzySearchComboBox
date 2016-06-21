@@ -24,6 +24,8 @@ namespace DemoApplication.ViewModels
                 {
                     _countryId = value;
                     OnPropertyChanged("CountryID");
+                    OnPropertyChanged("RegionID");
+                    OnPropertyChanged("CityID");
                 }
             }
         }
@@ -37,7 +39,9 @@ namespace DemoApplication.ViewModels
                 if (value != _regionId)
                 {
                     _regionId = value;
+                    OnPropertyChanged("CountryID");
                     OnPropertyChanged("RegionID");
+                    OnPropertyChanged("CityID");
                 }
             }
         }
@@ -51,6 +55,8 @@ namespace DemoApplication.ViewModels
                 if (value != _cityId)
                 {
                     _cityId = value;
+                    OnPropertyChanged("CountryID");
+                    OnPropertyChanged("RegionID");
                     OnPropertyChanged("CityID");
                 }
             }

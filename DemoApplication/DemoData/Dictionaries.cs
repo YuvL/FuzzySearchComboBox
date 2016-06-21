@@ -19,18 +19,18 @@ namespace DemoApplication.DemoData
             //get addresses like country - region - city
             var addresses = new List<Tuple<ValueContainer, ValueContainer, ValueContainer>>();
             //Germany
-            var city = new ValueContainer(null, null);
-            addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(1, "Bavaria"), city));
+            var cityEmpty = new ValueContainer(null, null);
+            addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(1, "Bavaria"), cityEmpty));
             addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(1, "Bavaria"), new ValueContainer(1, "Munich")));
             addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(1, "Bavaria"), new ValueContainer(2, "Bamberg")));
             addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(1, "Bavaria"), new ValueContainer(3, "Nuremberg")));
 
-            addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(2, "Saxony"), city));
+            addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(2, "Saxony"), cityEmpty));
             addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(2, "Saxony"), new ValueContainer(4, "Drezden")));
             addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(2, "Saxony"), new ValueContainer(5, "Leipzig")));
             addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(2, "Saxony"), new ValueContainer(6, "Zwickau")));
 
-            addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(3, "Thuringia"), city));
+            addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(3, "Thuringia"), cityEmpty));
             addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(3, "Thuringia"), new ValueContainer(7, "Erfurt")));
             addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(3, "Thuringia"), new ValueContainer(8, "Jena")));
             addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(3, "Thuringia"), new ValueContainer(9, "Gera")));
@@ -38,33 +38,33 @@ namespace DemoApplication.DemoData
 
 
             //France
-            addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(4, "Burgundy"), city));
+            addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(4, "Burgundy"), cityEmpty));
             addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(4, "Burgundy"), new ValueContainer(10, "Dijon")));
             addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(4, "Burgundy"), new ValueContainer(11, "Beaune")));
             addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(4, "Burgundy"), new ValueContainer(12, "Beze")));
 
-            addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(5, "Britany"), city));
+            addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(5, "Britany"), cityEmpty));
             addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(5, "Britany"), new ValueContainer(13, "Renes")));
             addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(5, "Britany"), new ValueContainer(14, "Brest")));
 
-            addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(6, "Normandy"), city));
+            addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(6, "Normandy"), cityEmpty));
             addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(6, "Normandy"), new ValueContainer(15, "Caen")));
             addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(6, "Normandy"), new ValueContainer(16, "Le Havre")));
             addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(6, "Normandy"), new ValueContainer(17, "Rouen")));
 
 
             //Spain
-            addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(7, "Catalonia"), city));
+            addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(7, "Catalonia"), cityEmpty));
             addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(7, "Catalonia"), new ValueContainer(18, "Barcelona")));
             addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(7, "Catalonia"), new ValueContainer(19, "Girona")));
             addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(7, "Catalonia"), new ValueContainer(20, "Tarragona")));
 
-            addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(8, "Aragon"), city));
+            addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(8, "Aragon"), cityEmpty));
             addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(8, "Aragon"), new ValueContainer(21, "Saragossa")));
             addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(8, "Aragon"), new ValueContainer(22, "Teruel")));
             addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(8, "Aragon"), new ValueContainer(23, "Huesca")));
 
-            addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(9, "Andalucia"), city));
+            addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(9, "Andalucia"), cityEmpty));
             addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(9, "Andalucia"), new ValueContainer(24, "Sevilla")));
             addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(9, "Andalucia"), new ValueContainer(25, "Jaen")));
             addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(9, "Andalucia"), new ValueContainer(26, "Granada")));
@@ -103,6 +103,21 @@ namespace DemoApplication.DemoData
                 {
                     region.Parents = countries;
                     region.Childs = cities;
+                }
+            }
+
+            //group by city
+            foreach (var cityGrouping in addresses.GroupBy(x => x.Item3))
+            {
+                var districts = cityGrouping
+                    .Select(x => x.Item2)
+                    .Distinct()
+                    .Where(x => x.ID != null)
+                    .ToDictionary(key => key.ID);
+
+                foreach (var city in cityGrouping.Select(x => x.Item3))
+                {
+                    city.Parents = districts;
                 }
             }
 
