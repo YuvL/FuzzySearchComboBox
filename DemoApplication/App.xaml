@@ -9,23 +9,5 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="5"/>
         </Style>
-        <Style TargetType="UserControl">
-            <Style.Triggers>
-                <Trigger Property="componentModel:DesignerProperties.IsInDesignMode"
-                         Value="True">
-                    <Setter Property="Background" Value="{x:Static SystemColors.WindowBrush}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="DisablingUserControl" TargetType="{x:Type UserControl}" BasedOn="{StaticResource {x:Type UserControl}}">
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Margin" Value="5"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsEnabled}" Value="False">
-                    <Setter Property="IsEnabled" Value="False" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-         
     </Application.Resources>
 </Application>
