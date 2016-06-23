@@ -25,6 +25,8 @@ namespace DemoApplication.Views
         {
             InitializeComponent();
             DataContext = new AddressViewModel();
+            //Loaded += (sender, args) => Keyboard.Focus(CountryCombobox);
+            Loaded += (sender, args) => FocusManager.SetFocusedElement(GridScope, CountryCombobox); ;
         }
     }
 }
