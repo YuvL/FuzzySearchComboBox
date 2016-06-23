@@ -294,6 +294,8 @@ namespace Controls.FuzzySearchComboBox
             {
                 VisualTreeParents.Add(current);
             }
+            if(IsFocused)
+                InputTextBox.Focus();
         }
 
         private static void OnMouseWheel(object sender, MouseWheelEventArgs e)
@@ -870,6 +872,7 @@ namespace Controls.FuzzySearchComboBox
             else
                 SelectedItem = null;
             ClosePopup();
+            Keyboard.Focus(InputTextBox);
         }
 
         private void SetSelectedItem(int? key)
