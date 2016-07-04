@@ -481,11 +481,12 @@ namespace Controls.FuzzySearchComboBox
             var number = e.Key >= Key.D0 && e.Key <= Key.D9 || e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9;
             var space = e.Key == Key.Space;
             var back = e.Key == Key.Back;
+            var delete = e.Key == Key.Delete;
             var ruKeys = e.Key >= Key.Oem1 && e.Key <= Key.Oem7;
             var oemComma = e.Key == Key.OemComma;
             var oemPeriod = e.Key == Key.OemPeriod;
 
-            var symbolPressed = symbol || number || space || back || ruKeys || oemComma || oemPeriod;
+            var symbolPressed = symbol || number || space || back || delete || ruKeys || oemComma || oemPeriod;
             return symbolPressed;
         }
 
