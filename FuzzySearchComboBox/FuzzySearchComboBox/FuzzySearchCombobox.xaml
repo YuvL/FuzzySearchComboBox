@@ -82,7 +82,9 @@
             </Style.Triggers>
         </Style>
         <DataTemplate x:Key="CommonItemDataTemplate">
-            <TextBlock Margin="7,0,5,0" Focusable="True" MouseEnter="SearchResultPanelItem_OnMouseEnter" MouseUp="SearchResultPanelItem_OnMouseUp" TextOptions.TextFormattingMode="Display" Text="{Binding}" />
+            <TextBlock Margin="7,0,5,0" Focusable="True" MouseEnter="SearchResultPanelItem_OnMouseEnter"
+                       MouseUp="SearchResultPanelItem_OnMouseUp" TextOptions.TextFormattingMode="Display"
+                       Text="{Binding}" ToolTip="{Binding}"/>
         </DataTemplate>
         <DataTemplate x:Key="HeaderItemDataTemplate">
             <StackPanel HorizontalAlignment="Left" Margin="7,7,5,5">

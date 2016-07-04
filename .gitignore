@@ -1,2 +1,8 @@
 FuzzySearchComboBox/obj/Release/FilterCombobox/FilterCombobox.g.cs
 FuzzySearchComboBox/obj/
+*.suo
+/.vs/FuzzySearchComboBox/v14
+/DemoApplication/bin/Debug
+/DemoApplication/obj/Debug
+/FuzzySearchComboBox/lib
+/packages/log4net.2.0.3
