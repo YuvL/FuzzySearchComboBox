@@ -122,6 +122,7 @@ namespace Controls.FuzzySearchComboBox
         }
 
         public string NoDataText { get { return (string)GetValue(NoDataTextProperty); } set { SetValue(NoDataTextProperty, value); } }
+        public string ResourceDictionaryFilePath { get { return (string)GetValue(ResourceDictionaryFilePathProperty); } set { SetValue(ResourceDictionaryFilePathProperty, value); } }
 
         public Dictionary<int?, ValueContainer> ParentItems
         {
@@ -228,6 +229,18 @@ namespace Controls.FuzzySearchComboBox
 
         public static readonly DependencyProperty NoDataTextProperty = DependencyProperty.Register("NoDataText", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata(NoDataTextDefault));
 
+        public static readonly DependencyProperty ResourceDictionaryFilePathProperty = DependencyProperty.Register("ResourceDictionaryFilePath", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata(default(string)));
+
+        public static ResourceDictionary ResourceDictionary { get; set; }
+        
+        private void CreateResourceDictionary()
+        {
+            ResourceDictionary = null;
+            if (string.IsNullOrEmpty(ResourceDictionaryFilePath))
+                return;
+            ResourceDictionary = new ResourceDictionary() { Source = new Uri(ResourceDictionaryFilePath, UriKind.Absolute) };
+        }
+
         static FuzzySearchCombobox()
         {
             EventManager.RegisterClassHandler(typeof(FuzzySearchCombobox), Mouse.MouseWheelEvent, new MouseWheelEventHandler(OnMouseWheel), true);
@@ -258,6 +271,19 @@ namespace Controls.FuzzySearchComboBox
             BounceProtectionDelay = DefaultBounceProtectionDelay;
             _fuzzySearchComboboxCreatedAt = DateTime.Now.ToString("HH:mm:ss.fff");
             Logger.DebugFormat(LoggingMessages.FuzzySearchComboBoxCreatedFormat, NameForDebug);
+
+            //CreateResourceDictionary();
+            //_allItemsHeader = new ResultItem(ResultType.All);
+            //_fuzzyHeader = new ResultItem(ResultType.Fuzzy);
+            //_renamedItemsHeader = new ResultItem(ResultType.Renamed);
+            //_strongHeader = new ResultItem(ResultType.Strong);
+        }
+
+        public static string GetResultTypeName(ResultType resultType)
+        {
+            if(ResourceDictionary != null && ResourceDictionary.Contains(resultType.ToString()))
+                return ResourceDictionary[resultType.ToString()] as string ?? default(string);
+            return default(string);
         }
 
         protected virtual void OnPropertyChanged(string propertyName = null)
@@ -294,8 +320,23 @@ namespace Controls.FuzzySearchComboBox
             {
                 VisualTreeParents.Add(current);
             }
-            if(IsFocused)
+
+            CreateResourceDictionaryAndUpdareUi();
+
+            if (IsFocused)
                 InputTextBox.Focus();
+        }
+
+        private void CreateResourceDictionaryAndUpdareUi()
+        {
+            CreateResourceDictionary();
+            if (ResourceDictionary != null)
+            {
+                _allItemsHeader = new ResultItem(ResultType.All);
+                _fuzzyHeader = new ResultItem(ResultType.Fuzzy);
+                _renamedItemsHeader = new ResultItem(ResultType.Renamed);
+                _strongHeader = new ResultItem(ResultType.Strong);
+            }
         }
 
         private static void OnMouseWheel(object sender, MouseWheelEventArgs e)
@@ -929,13 +970,13 @@ namespace Controls.FuzzySearchComboBox
             AlwaysShow = null;
         }
 
-        private readonly ResultItem _allItemsHeader = new ResultItem(ResultType.All);
+        private ResultItem _allItemsHeader = new ResultItem(ResultType.All);
 
         //for debug
         private readonly string _fuzzySearchComboboxCreatedAt;
-        private readonly ResultItem _fuzzyHeader = new ResultItem(ResultType.Fuzzy);
-        private readonly ResultItem _renamedItemsHeader = new ResultItem(ResultType.Renamed);
-        private readonly ResultItem _strongHeader = new ResultItem(ResultType.Strong);
+        private ResultItem _fuzzyHeader = new ResultItem(ResultType.Fuzzy);
+        private ResultItem _renamedItemsHeader = new ResultItem(ResultType.Renamed);
+        private ResultItem _strongHeader = new ResultItem(ResultType.Strong);
 
         //запускает поиск
         private Timer _bounceProtection = new Timer();
@@ -985,9 +1026,9 @@ namespace Controls.FuzzySearchComboBox
 
             public ResultItem(ResultType resultType)
             {
-                var resultTypeName = resultType.GetName();
+                var resultTypeName =FuzzySearchCombobox.GetResultTypeName(resultType) ?? resultType.GetName();
                 KeyValuePair = new KeyValuePair<int?, ValueContainer>(-Math.Abs(resultTypeName.GetHashCode()) - 1, new ValueContainer(null, resultTypeName));
-                ItemType = ItemType.Header;
+                 ItemType = ItemType.Header;
             }
 
             public override string ToString()
