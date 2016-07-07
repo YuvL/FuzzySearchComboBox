@@ -272,11 +272,6 @@ namespace Controls.FuzzySearchComboBox
             _fuzzySearchComboboxCreatedAt = DateTime.Now.ToString("HH:mm:ss.fff");
             Logger.DebugFormat(LoggingMessages.FuzzySearchComboBoxCreatedFormat, NameForDebug);
 
-            //CreateResourceDictionary();
-            //_allItemsHeader = new ResultItem(ResultType.All);
-            //_fuzzyHeader = new ResultItem(ResultType.Fuzzy);
-            //_renamedItemsHeader = new ResultItem(ResultType.Renamed);
-            //_strongHeader = new ResultItem(ResultType.Strong);
         }
 
         public static string GetResultTypeName(ResultType resultType)
