@@ -913,8 +913,8 @@ namespace Controls.FuzzySearchComboBox
 
             SelectedKey = null;
             SelectedValue = null;
-            if (_textChangedCodebehind)
-                InputTextBox.Text = string.Empty;
+            //if (_textChangedCodebehind) это поле всегда false и ни на что не влияет, а InputTextBox надо очищать, если item == null
+            InputTextBox.Text = string.Empty;
 
             ChildItems = GetChilds(ParentItemsSource);
             ParentItems = null;
