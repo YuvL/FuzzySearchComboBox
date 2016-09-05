@@ -563,7 +563,6 @@ namespace Controls.FuzzySearchComboBox
         {
             _synchronizationContext.Send(state => OpenPopupIfClose(), null);
             _synchronizationContext.Send(state => Search(), null);
-            _textChangedCodebehind = false;
             _bounceProtection.Close();
         }
 
@@ -913,7 +912,6 @@ namespace Controls.FuzzySearchComboBox
 
             SelectedKey = null;
             SelectedValue = null;
-            //if (_textChangedCodebehind) это поле всегда false и ни на что не влияет, а InputTextBox надо очищать, если item == null
             InputTextBox.Text = string.Empty;
 
             ChildItems = GetChilds(ParentItemsSource);
@@ -947,7 +945,6 @@ namespace Controls.FuzzySearchComboBox
         private ResultItem _selection;
         private int? _setSelectedKeyRequest;
         private readonly SynchronizationContext _synchronizationContext;
-        private bool _textChangedCodebehind;
 
         private bool Checked { get { return (bool)GetValue(CheckedProperty); } set { SetValue(CheckedProperty, value); } }
 
