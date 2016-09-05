@@ -6,11 +6,13 @@
              xmlns:local="clr-namespace:DemoApplication.Views"
              xmlns:fuzzySearchComboBox="clr-namespace:Controls.FuzzySearchComboBox;assembly=Controls"
              xmlns:viewModels="clr-namespace:DemoApplication.ViewModels"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <Style TargetType="Label" BasedOn="{StaticResource CommonStyle}"/>
         <Style TargetType="{x:Type fuzzySearchComboBox:FuzzySearchCombobox}" BasedOn="{StaticResource CommonStyle}"/>
+        <system:String x:Key="ResourceDictionaryFilePath">pack://application:,,,/Resources/Localization.Base.xaml</system:String>
     </UserControl.Resources>
     <Grid Name ="GridScope"  KeyboardNavigation.TabNavigation="Cycle" FocusManager.IsFocusScope="True" >
         <Grid.RowDefinitions>
@@ -35,6 +37,7 @@
 
         <Label  Grid.Row="1" Grid.Column="0" Content="Region"/>
         <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="1" Grid.Column="1"
+            ResourceDictionaryFilePath ="{StaticResource ResourceDictionaryFilePath}"
             Name="RegionCombobox"
             GroupName="1C3717ED-F297-4EE2-A42E-676F86016CAF"
             CountToOutputValues="5"

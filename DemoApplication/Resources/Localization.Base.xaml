@@ -1,0 +1,11 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:s="clr-namespace:System;assembly=mscorlib">
+
+    <s:String x:Key="Empty">Неизвестно</s:String>
+    <s:String x:Key="All">Все</s:String>
+    <s:String x:Key="Strong">По алфавиту</s:String>
+    <s:String x:Key="Fuzzy">Нечетко</s:String>
+    <s:String x:Key="Renamed">Переименовано</s:String>
+
+</ResourceDictionary>
