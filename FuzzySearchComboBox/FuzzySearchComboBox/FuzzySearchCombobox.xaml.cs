@@ -122,7 +122,6 @@ namespace Controls.FuzzySearchComboBox
         }
 
         public string NoDataText { get { return (string)GetValue(NoDataTextProperty); } set { SetValue(NoDataTextProperty, value); } }
-        public string ResourceDictionaryFilePath { get { return (string)GetValue(ResourceDictionaryFilePathProperty); } set { SetValue(ResourceDictionaryFilePathProperty, value); } }
 
         public Dictionary<int?, ValueContainer> ParentItems
         {
@@ -229,16 +228,11 @@ namespace Controls.FuzzySearchComboBox
 
         public static readonly DependencyProperty NoDataTextProperty = DependencyProperty.Register("NoDataText", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata(NoDataTextDefault));
 
-        public static readonly DependencyProperty ResourceDictionaryFilePathProperty = DependencyProperty.Register("ResourceDictionaryFilePath", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata(default(string)));
-
         public static ResourceDictionary ResourceDictionary { get; set; }
-        
+
         private void CreateResourceDictionary()
         {
-            ResourceDictionary = null;
-            if (string.IsNullOrEmpty(ResourceDictionaryFilePath))
-                return;
-            ResourceDictionary = new ResourceDictionary() { Source = new Uri(ResourceDictionaryFilePath, UriKind.Absolute) };
+            ResourceDictionary = new ResourceDictionary { Source = new Uri("/Controls;component/Resources/Localization.Base.xaml", UriKind.RelativeOrAbsolute) };
         }
 
         static FuzzySearchCombobox()
