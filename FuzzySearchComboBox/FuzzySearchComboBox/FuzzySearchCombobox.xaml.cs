@@ -413,7 +413,12 @@ namespace Controls.FuzzySearchComboBox
             }
             else
             {
-                dependencyObject.InternalItemsSource = childItemSource;
+                //если элементы пришли как от родительского, так и от дочернего Combobox'a
+                dependencyObject.InternalItemsSource = dependencyObject.ParentItemsSource != null
+                    ? childItemSource.Where(
+                        pair => dependencyObject.ParentItemsSource.Any(valuePair => valuePair.Key == pair.Key))
+                        .ToDictionary(pair => pair.Key, pair => pair.Value)
+                    : childItemSource;
                 dependencyObject.ParentItems = dependencyObject.GetParents(childItemSource);
             }
 
