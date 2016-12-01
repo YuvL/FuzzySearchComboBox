@@ -230,6 +230,98 @@ namespace Controls.FuzzySearchComboBox
 
         public static ResourceDictionary ResourceDictionary { get; set; }
 
+        #region grop behaivair............................................................................
+
+
+
+        public static readonly DependencyProperty ParentComboboxNameProperty = DependencyProperty.Register("ParentComboboxName", typeof(string), typeof(FuzzySearchCombobox));
+
+        public string ParentComboboxName
+        {
+            get { return (string)GetValue(ParentComboboxNameProperty); }
+            set
+            {
+                SetValue(ParentComboboxNameProperty, value);
+                OnPropertyChanged("ParentComboboxName");
+            }
+        }
+
+        public static readonly DependencyProperty ChildComboboxNameProperty = DependencyProperty.Register("ChildComboboxName", typeof(string), typeof(FuzzySearchCombobox));
+
+        public string ChildComboboxName
+        {
+            get { return (string)GetValue(ChildComboboxNameProperty); }
+            set
+            {
+                SetValue(ChildComboboxNameProperty, value);
+                OnPropertyChanged("ChildComboboxName");
+            }
+        }
+
+        public static readonly DependencyProperty IsValidInGroupProperty = DependencyProperty.Register("IsValidInGroup", typeof(bool), typeof(FuzzySearchCombobox), new PropertyMetadata(true));
+        public bool IsValidInGroup
+        {
+            get { return (bool)GetValue(IsValidInGroupProperty); }
+            set
+            {
+                SetValue(IsValidInGroupProperty, value);
+
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs("IsValidInGroup"));
+            }
+        }
+
+        private bool HaveChild { get { return !String.IsNullOrEmpty(ChildComboboxName); } }
+
+        private bool HaveParent { get { return !String.IsNullOrEmpty(ParentComboboxName); } }
+
+        private static void UpdateGroupValidation(FuzzySearchCombobox combobox)
+        {
+            var dependentComboboxes = GetGroupComboboxes(combobox).ToList();
+
+            foreach (var item in dependentComboboxes)
+            {
+                //the lowest level always in the group is valid (City)
+                if (!item.HaveChild && item.HaveParent)
+                    continue;
+
+                //the highest level (Country)
+                if (item.HaveChild && !item.HaveParent)
+                {
+                    var childComobox = dependentComboboxes.FirstOrDefault(x => x.Name == item.ChildComboboxName);
+                    //item.IsValidInGroup = childComobox.IsValidInGroup && (childComobox.SelectedItem == null || item.SelectedItem != null);
+                    item.IsValidInGroup = item.SelectedItem != null || (childComobox.SelectedItem == null && childComobox.IsValidInGroup);
+                    continue;
+                }
+
+                //middle level
+                var childComobox1 = dependentComboboxes.FirstOrDefault(x => x.Name == item.ChildComboboxName);
+                var parentComobox1 = dependentComboboxes.FirstOrDefault(x => x.Name == item.ParentComboboxName);
+                if(childComobox1 == null || parentComobox1==null)
+                    continue;
+
+                var validForChild = childComobox1.SelectedItem == null || item.SelectedItem != null;
+                var validForParent = parentComobox1.SelectedItem != null && item.SelectedItem != null;
+
+                item.IsValidInGroup = item.SelectedItem == null ? validForChild : validForChild || validForParent;
+            }
+        }
+
+        private static void ParentsAutoComplete(FuzzySearchCombobox combobox)
+        {
+            var groupComboboxes = GetGroupComboboxes(combobox).ToList();
+            var parentComobox = groupComboboxes.FirstOrDefault(x => x.Name == combobox.ParentComboboxName);
+
+            if(parentComobox != null && parentComobox.ChildItemsSource != null && parentComobox.ChildItemsSource.Count == 1)
+            {
+                var parentItem = parentComobox.ChildItemsSource.Values.FirstOrDefault();
+                var parentKey = parentComobox.ChildItemsSource.Keys.FirstOrDefault();
+                parentComobox.SetSelectedItem(new KeyValuePair<int?, ValueContainer>(parentKey, parentItem));
+            }
+        }
+
+        #endregion............................................................................................
+
         private void CreateResourceDictionary()
         {
             ResourceDictionary = new ResourceDictionary { Source = new Uri("/Controls;component/Resources/Localization.Base.xaml", UriKind.RelativeOrAbsolute) };
@@ -302,6 +394,23 @@ namespace Controls.FuzzySearchComboBox
             return groups;
         }
 
+        private static IEnumerable<FuzzySearchCombobox> GetGroupComboboxes(FuzzySearchCombobox target)
+        {
+            Func<FuzzySearchCombobox, bool> inSameOrWithoutDataTemplate = combobox =>
+            {
+                var parentOfThisCombobox = combobox.VisualTreeParents.FirstOrDefault(ItIsContentControl);
+                var parentOfOtherCombobox = target.VisualTreeParents.FirstOrDefault(ItIsContentControl);
+                return ReferenceEquals(parentOfThisCombobox, parentOfOtherCombobox);
+            };
+
+            var groups = Comboboxes
+                .Where(combobox => combobox.VisualTreeParents.Any(ItIsContentControl))
+                .Where(inSameOrWithoutDataTemplate)
+                .Where(combobox => combobox.GroupName == target.GroupName)
+                .ToList();
+            return groups;
+        }
+
         private void OnFuzzySearchComboboxLoaded(object sender, RoutedEventArgs e)
         {
             DependencyObject current = this;
@@ -355,8 +464,15 @@ namespace Controls.FuzzySearchComboBox
             var fuzzySearchCombobox = ((FuzzySearchCombobox)o);
             fuzzySearchCombobox.SetSelectedItem(item);
 
+            ParentsAutoComplete(fuzzySearchCombobox);
+
+            UpdateGroupValidation(fuzzySearchCombobox);
+
             Logger.DebugFormat(LoggingMessages.SelectedItemSettedTo, item != null && item.Value.Value != null ? item.Value.Value.ToString() : "null", fuzzySearchCombobox.NameForDebug);
         }
+
+        
+
 
         private static void ParentItemSourceChangedCallBack(DependencyObject o, DependencyPropertyChangedEventArgs args)
         {

@@ -24,9 +24,37 @@ namespace DemoApplication.Views
         public AddressView()
         {
             InitializeComponent();
-            DataContext = new AddressViewModel();
-            //Loaded += (sender, args) => Keyboard.Focus(CountryCombobox);
+            GridScope.DataContext = new AddressViewModel();
+            GridScopeA.DataContext = new AddressAutocompleteViewModel();
+
             Loaded += (sender, args) => FocusManager.SetFocusedElement(GridScope, CountryCombobox); ;
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            var msg = new StringBuilder();
+
+            if (!CityComboboxA.IsValid)
+                msg.AppendLine("City not valid.");
+            if (!CityComboboxA.IsValidInGroup)
+                msg.AppendLine("City not requared.");
+
+            if (!RegionComboboxA.IsValid)
+                msg.AppendLine("Region not valid.");
+            if (!RegionComboboxA.IsValidInGroup)
+                msg.AppendLine("Region requared.");
+
+            if (!CountryComboboxA.IsValid)
+                msg.AppendLine("Country not valid.");
+            if (!CountryComboboxA.IsValidInGroup)
+                msg.AppendLine("Country requared.");
+
+
+
+            if (String.IsNullOrEmpty(msg.ToString()))
+                MessageBox.Show("Address is valid.", "Success", MessageBoxButton.OK);
+            else
+                MessageBox.Show(msg.ToString(), "Error", MessageBoxButton.OK);
         }
     }
 }

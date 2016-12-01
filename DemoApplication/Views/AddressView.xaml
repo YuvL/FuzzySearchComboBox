@@ -5,52 +5,134 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:fuzzySearchComboBox="clr-namespace:Controls.FuzzySearchComboBox;assembly=Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="700">
     <UserControl.Resources>
         <Style TargetType="Label" BasedOn="{StaticResource CommonStyle}"/>
         <Style TargetType="{x:Type fuzzySearchComboBox:FuzzySearchCombobox}" BasedOn="{StaticResource CommonStyle}"/>
     </UserControl.Resources>
-    <Grid Name ="GridScope"  KeyboardNavigation.TabNavigation="Cycle" FocusManager.IsFocusScope="True" >
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Label  Grid.Row="0" Grid.Column="0" Content="Country"/>
-        <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="0" Grid.Column="1"
-            Name="CountryCombobox"
-            GroupName="1C3717ED-F297-4EE2-A42E-676F86016CAF"
-            ParentItemsSource="{Binding AddressDictionary}"
-            ChildItemsSource="{Binding ElementName=RegionCombobox, Path=ParentItems}"
-            SelectedKey="{Binding CountryID, ValidatesOnDataErrors=True, Mode=TwoWay}"
-                                                 KeyboardNavigation.TabNavigation="Local"
-                                                 TabIndex="0"/>
+    <Grid>
+        <TabControl>
+            <TabItem Header="Address">
+                <Grid Name ="GridScope"  KeyboardNavigation.TabNavigation="Cycle" FocusManager.IsFocusScope="True" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label  Grid.Row="0" Grid.Column="0" Content="Country"/>
+                    <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="0" Grid.Column="1"
+                        Name="CountryCombobox"
+                        GroupName="1C3717ED-F297-4EE2-A42E-676F86016CAF"
+                        ParentItemsSource="{Binding AddressDictionary}"
+                        ChildItemsSource="{Binding ElementName=RegionCombobox, Path=ParentItems}"
+                        SelectedKey="{Binding CountryID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                             KeyboardNavigation.TabNavigation="Local"
+                                                             TabIndex="0"/>
 
-        <Label  Grid.Row="1" Grid.Column="0" Content="Region"/>
-        <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="1" Grid.Column="1"
-            Name="RegionCombobox"
-            GroupName="1C3717ED-F297-4EE2-A42E-676F86016CAF"
-            CountToOutputValues="5"
-            ParentItemsSource="{Binding ElementName=CountryCombobox, Path=ChildItems}"
-            ChildItemsSource="{Binding ElementName=CityCombobox, Path=ParentItems}"
-            SelectedKey="{Binding RegionID, ValidatesOnDataErrors=True, Mode=TwoWay}"
-                                                 KeyboardNavigation.TabNavigation="Local"
-                                                 TabIndex="1"/>
+                    <Label  Grid.Row="1" Grid.Column="0" Content="Region"/>
+                    <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="1" Grid.Column="1"
+                        Name="RegionCombobox"
+                        GroupName="1C3717ED-F297-4EE2-A42E-676F86016CAF"
+                        CountToOutputValues="5"
+                        ParentItemsSource="{Binding ElementName=CountryCombobox, Path=ChildItems}"
+                        ChildItemsSource="{Binding ElementName=CityCombobox, Path=ParentItems}"
+                        SelectedKey="{Binding RegionID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                             KeyboardNavigation.TabNavigation="Local"
+                                                             TabIndex="1"/>
 
-        <Label  Grid.Row="2" Grid.Column="0" Content="City"/>
-        <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="2" Grid.Column="1"
-            Name="CityCombobox"
-            GroupName="1C3717ED-F297-4EE2-A42E-676F86016CAF"
-            CountToOutputValues="15"
-            ParentItemsSource="{Binding ElementName=RegionCombobox, Path=ChildItems}"
-            SelectedKey="{Binding CityID, ValidatesOnDataErrors=True, Mode=TwoWay}"
-                                                 KeyboardNavigation.TabNavigation="Local"
-                                                 TabIndex="2"/>
+                    <Label  Grid.Row="2" Grid.Column="0" Content="City"/>
+                    <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="2" Grid.Column="1"
+                        Name="CityCombobox"
+                        GroupName="1C3717ED-F297-4EE2-A42E-676F86016CAF"
+                        CountToOutputValues="15"
+                        ParentItemsSource="{Binding ElementName=RegionCombobox, Path=ChildItems}"
+                        SelectedKey="{Binding CityID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                             KeyboardNavigation.TabNavigation="Local"
+                                                             TabIndex="2"/>
 
+                </Grid>
+
+            </TabItem>
+            <TabItem Header="Address with autocomplete">
+                <Grid Name ="GridScopeA"  KeyboardNavigation.TabNavigation="Cycle" FocusManager.IsFocusScope="True" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label  Grid.Row="0" Grid.Column="0" Content="City"/>
+                    <Label  Grid.Row="0" Grid.Column="1" Content="*" Foreground="Blue" Visibility="{Binding ElementName=CityComboboxA, Path=IsValid, Converter={StaticResource InverseBoolToVisConverter}}" />
+                    <Label  Grid.Row="0" Grid.Column="2" Content="*" Foreground="Red" Visibility="{Binding ElementName=CityComboboxA, Path=IsValidInGroup, Converter={StaticResource InverseBoolToVisConverter}}" />
+                    <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="0" Grid.Column="3"
+                        Name="CityComboboxA"
+                        GroupName="1C3717ED-F297-4EE2-A42E-676F86016CA0"
+                        CountToOutputValues="15"
+                        ParentComboboxName ="RegionComboboxA"
+                        ParentItemsSource="{Binding ElementName=RegionComboboxA, Path=ChildItems}"
+                        SelectedKey="{Binding CityID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                             KeyboardNavigation.TabNavigation="Local"
+                                                             TabIndex="0"/>
+
+
+                    <Label  Grid.Row="1" Grid.Column="0" Content="Region"/>
+                    <Label  Grid.Row="1" Grid.Column="1" Content="*" Foreground="Blue" Visibility="{Binding ElementName=RegionComboboxA, Path=IsValid, Converter={StaticResource InverseBoolToVisConverter}}" />
+                    <Label  Grid.Row="1" Grid.Column="2" Content="*" Foreground="Red" Visibility="{Binding ElementName=RegionComboboxA, Path=IsValidInGroup, Converter={StaticResource InverseBoolToVisConverter}}" />
+                    <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="1" Grid.Column="3"
+                        Name="RegionComboboxA"
+                        GroupName="1C3717ED-F297-4EE2-A42E-676F86016CA0"
+                        CountToOutputValues="5"
+                        ParentComboboxName="CountryComboboxA"                                    
+                        ChildComboboxName ="CityComboboxA"
+                        ParentItemsSource="{Binding ElementName=CountryComboboxA, Path=ChildItems}"
+                        ChildItemsSource="{Binding ElementName=CityComboboxA, Path=ParentItems}"
+                        SelectedKey="{Binding RegionID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                             KeyboardNavigation.TabNavigation="Local"
+                                                             TabIndex="1"/>
+                    
+                    <Label  Grid.Row="2" Grid.Column="0" Content="Country"/>
+                    <Label  Grid.Row="2" Grid.Column="1" Content="*" Foreground="Blue" Visibility="{Binding ElementName=CountryComboboxA, Path=IsValid, Converter={StaticResource InverseBoolToVisConverter}}" />
+                    <Label  Grid.Row="2" Grid.Column="2" Content="*" Foreground="Red" Visibility="{Binding ElementName=CountryComboboxA, Path=IsValidInGroup, Converter={StaticResource InverseBoolToVisConverter}}" />
+                    <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="2" Grid.Column="3"
+                        Name="CountryComboboxA"
+                        GroupName="1C3717ED-F297-4EE2-A42E-676F86016CA0"
+                        ChildComboboxName ="RegionComboboxA"
+                        ParentItemsSource="{Binding AddressDictionary}"
+                        ChildItemsSource="{Binding ElementName=RegionComboboxA, Path=ParentItems}"
+                        SelectedKey="{Binding CountryID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                             KeyboardNavigation.TabNavigation="Local"
+                                                             TabIndex="2"/>
+                    <TextBlock  Grid.Row="3" Margin="10" HorizontalAlignment="Left" Grid.ColumnSpan="4"
+                               Text="1. Performed validation of each field."/>
+
+                    <TextBlock  Grid.Row="4"  Margin="10" HorizontalAlignment="Left" Grid.ColumnSpan="4"
+                               Text="2. Performed validation group addresses integrity. When filling out the field should also be filled with the child field."/>
+
+                    <TextBlock  Grid.Row="5"  Margin="10" HorizontalAlignment="Left" Grid.ColumnSpan="4"
+                               Text="3. When one correspondence between the child and the parent field is produced autocomplete."/>
+
+                    <Button Grid.Row="6" HorizontalAlignment="Center" Grid.ColumnSpan="4" Height="23" Width="75" Content="Test Address" 
+                            Click="ButtonBase_OnClick"/>
+
+                </Grid>
+
+            </TabItem>
+        </TabControl>
     </Grid>
+    
 </UserControl>
