@@ -254,7 +254,7 @@ namespace Controls.FuzzySearchComboBox
             if (parentCombobox != null)
             {
                 var childItemsSource = parentCombobox.ChildItemsSource;
-                if (childItemsSource != null && childItemsSource.Count() == 1)
+                if (childItemsSource != null && childItemsSource.Count(x => !x.Value.IsDeleted) == 1)
                 {
                     parentCombobox.SetSelectedItem(childItemsSource.FirstOrDefault());
                 }
