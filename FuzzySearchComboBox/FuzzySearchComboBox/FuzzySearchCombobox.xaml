@@ -79,6 +79,10 @@
                 <DataTrigger Binding="{Binding Path=(Validation.HasError), RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
                     <Setter Property="Control.Background" Value="#FFFF8080" />
                 </DataTrigger>
+                <DataTrigger Binding="{Binding Path=(IsValidInGroup), RelativeSource={RelativeSource AncestorType=UserControl}}" Value="False">
+                    <Setter Property="Control.Background" Value="#FFFF8080" />
+                </DataTrigger>
+                
             </Style.Triggers>
         </Style>
         <DataTemplate x:Key="CommonItemDataTemplate">
