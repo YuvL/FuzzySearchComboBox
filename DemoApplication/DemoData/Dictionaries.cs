@@ -14,7 +14,7 @@ namespace DemoApplication.DemoData
             return source.GroupBy(func).Select(x => x.First());
         }
 
-        public static Dictionary<int?, ValueContainer> InitAddressDictionary()
+        private static List<Tuple<ValueContainer, ValueContainer, ValueContainer>> CreateAddressDictionary()
         {
             //get addresses like country - region - city
             var addresses = new List<Tuple<ValueContainer, ValueContainer, ValueContainer>>();
@@ -68,6 +68,42 @@ namespace DemoApplication.DemoData
             addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(9, "Andalucia"), new ValueContainer(24, "Sevilla")));
             addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(9, "Andalucia"), new ValueContainer(25, "Jaen")));
             addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(9, "Andalucia"), new ValueContainer(26, "Granada")));
+
+            return addresses;
+        }
+
+        private static List<Tuple<ValueContainer, ValueContainer, ValueContainer>> CreateAddressDictionaryExt()
+        {
+            var addresses = CreateAddressDictionary();
+
+            //1 Germany-----------------------------------------
+            //1.1 city
+            addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(1, "Bavaria"), new ValueContainer(1000, "GermanyAndFrance")));
+
+            addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(2, "Saxony"), new ValueContainer(100, "SaxonyAndThuringia")));
+            addresses.Add(Tuple.Create(new ValueContainer(1, "Germany"), new ValueContainer(3, "Thuringia"), new ValueContainer(100, "SaxonyAndThuringia")));
+
+
+            //2 France------------------------------------------
+            //2.1 city
+            addresses.Add(Tuple.Create(new ValueContainer(2, "Germany"), new ValueContainer(4, "Burgundy"), new ValueContainer(1000, "GermanyAndFrance")));
+
+            addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(5, "Britany"), new ValueContainer(10000, "FranceNormandyBritany_SpainCataloniaAragonAndalucia")));
+            addresses.Add(Tuple.Create(new ValueContainer(2, "France"), new ValueContainer(6, "Normandy"), new ValueContainer(10000, "FranceNormandyBritany_SpainCataloniaAragonAndalucia")));
+
+            
+            //3 Spain-------------------------------------------
+            //3.1 city
+            addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(7, "Catalonia"), new ValueContainer(10000, "FranceNormandyBritany_SpainCataloniaAragonAndalucia")));
+            addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(8, "Aragon"), new ValueContainer(10000, "FranceNormandyBritany_SpainCataloniaAragonAndalucia")));
+            addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(9, "Andalucia"), new ValueContainer(10000, "FranceNormandyBritany_SpainCataloniaAragonAndalucia")));
+
+            return addresses;
+        }
+
+        public static Dictionary<int?, ValueContainer> InitAddressDictionary()
+        {
+            var addresses = CreateAddressDictionary();
 
             //group by country
             foreach (var countryGrouping in addresses.GroupBy(x => x.Item1))
@@ -125,6 +161,66 @@ namespace DemoApplication.DemoData
 
         }
 
-        
+        public static Dictionary<int?, ValueContainer> InitAddressDictionaryExt()
+        {
+            var addresses = CreateAddressDictionaryExt();
+
+            //group by country
+            foreach (var countryGrouping in addresses.GroupBy(x => x.Item1))
+            {
+                var regions = countryGrouping
+                    .Select(x => x.Item2)
+                    .Distinct()
+                    .Where(x => x.ID != null)
+                    .ToDictionary(key => key.ID);
+
+                foreach (var country in countryGrouping.Select(x => x.Item1))
+                {
+                    country.Childs = regions;
+                }
+            }
+
+            //group by region
+            foreach (var regionGrouping in addresses.GroupBy(x => x.Item2))
+            {
+                var countries = regionGrouping
+                    .Select(x => x.Item1)
+                    .Distinct()
+                    .Where(x => x.ID != null)
+                    .ToDictionary(key => key.ID);
+
+                var cities = regionGrouping
+                    .Select(x => x.Item3)
+                    .Distinct()
+                    .Where(x => x.ID != null)
+                    .ToDictionary(key => key.ID);
+
+                foreach (var region in regionGrouping.Select(x => x.Item2))
+                {
+                    region.Parents = countries;
+                    region.Childs = cities;
+                }
+            }
+
+            //group by city
+            foreach (var cityGrouping in addresses.GroupBy(x => x.Item3))
+            {
+                var districts = cityGrouping
+                    .Select(x => x.Item2)
+                    .Distinct()
+                    .Where(x => x.ID != null)
+                    .ToDictionary(key => key.ID);
+
+                foreach (var city in cityGrouping.Select(x => x.Item3))
+                {
+                    city.Parents = districts;
+                }
+            }
+
+            return addresses.Select(x => x.Item1).DistinctBy(x => x.ID).ToDictionary(x => x.ID);
+
+        }
+
+
     }
 }

@@ -3,11 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:DemoApplication"
              xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=PresentationFramework"
+             xmlns:views="clr-namespace:DemoApplication.Views"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <Style x:Key="CommonStyle" TargetType="FrameworkElement">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="5"/>
         </Style>
+        <views:InverseBoolToVisConverter x:Key="InverseBoolToVisConverter" />
     </Application.Resources>
 </Application>

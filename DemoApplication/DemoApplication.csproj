@@ -57,10 +57,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DemoData\Dictionaries.cs" />
+    <Compile Include="ViewModels\AddressAutocompleteViewModel.cs" />
     <Compile Include="ViewModels\AddressViewModel.cs" />
     <Compile Include="Views\AddressView.xaml.cs">
       <DependentUpon>AddressView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\InverseBoolToVisConverter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

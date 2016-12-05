@@ -230,6 +230,72 @@ namespace Controls.FuzzySearchComboBox
 
         public static ResourceDictionary ResourceDictionary { get; set; }
 
+        #region grop behaivair............................................................................
+
+        public bool DoAutocomplete { get; set; }
+
+        public static readonly DependencyProperty IsValidInGroupProperty = DependencyProperty.Register("IsValidInGroup", typeof(bool), typeof(FuzzySearchCombobox), new PropertyMetadata(true));
+        public bool IsValidInGroup
+        {
+            get { return (bool)GetValue(IsValidInGroupProperty); }
+            set
+            {
+                SetValue(IsValidInGroupProperty, value);
+
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs("IsValidInGroup"));
+            }
+        }
+
+        private static void ParentsAutoComplete(FuzzySearchCombobox combobox)
+        {
+            var binding = combobox.GetBindingExpression(ParentItemsSourceProperty);
+            var parentCombobox = binding.DataItem as FuzzySearchCombobox;
+            if (parentCombobox != null)
+            {
+                var childItemsSource = parentCombobox.ChildItemsSource;
+                if (childItemsSource != null && childItemsSource.Count(x => !x.Value.IsDeleted) == 1)
+                {
+                    parentCombobox.SetSelectedItem(childItemsSource.FirstOrDefault());
+                }
+            }
+        }
+
+        private static void UpdateGroupValidation(FuzzySearchCombobox combobox)
+        {
+            var dependentComboboxes = GetGroupComboboxes(combobox).ToList();
+
+            foreach (var item in dependentComboboxes)
+            {
+                var bindingChild = item.GetBindingExpression(ChildItemsSourceProperty);
+                var bindingParent = item.GetBindingExpression(ParentItemsSourceProperty);
+
+                var childCombobox = bindingChild != null ? bindingChild.DataItem as FuzzySearchCombobox : null;
+                var parentCombobox = bindingParent != null ? bindingParent.DataItem as FuzzySearchCombobox : null;
+
+                if(childCombobox == null && parentCombobox == null)
+                    continue;
+
+                //the lowest level always in the group is valid (City)
+                if (parentCombobox != null && childCombobox == null)
+                continue;
+
+                //the highest level (Country)
+                if (parentCombobox == null && childCombobox != null)
+                {
+                    item.IsValidInGroup = item.SelectedItem != null || (childCombobox.SelectedItem == null && childCombobox.IsValidInGroup);
+                    continue;
+                }
+
+                //middle level
+                var validForChild = childCombobox.SelectedItem == null || item.SelectedItem != null;
+                var validForParent = parentCombobox.SelectedItem != null && item.SelectedItem != null;
+                item.IsValidInGroup = item.SelectedItem == null ? validForChild : validForChild || validForParent;
+            }
+        }
+
+        #endregion............................................................................................
+
         private void CreateResourceDictionary()
         {
             ResourceDictionary = new ResourceDictionary { Source = new Uri("/Controls;component/Resources/Localization.Base.xaml", UriKind.RelativeOrAbsolute) };
@@ -302,6 +368,23 @@ namespace Controls.FuzzySearchComboBox
             return groups;
         }
 
+        private static IEnumerable<FuzzySearchCombobox> GetGroupComboboxes(FuzzySearchCombobox target)
+        {
+            Func<FuzzySearchCombobox, bool> inSameOrWithoutDataTemplate = combobox =>
+            {
+                var parentOfThisCombobox = combobox.VisualTreeParents.FirstOrDefault(ItIsContentControl);
+                var parentOfOtherCombobox = target.VisualTreeParents.FirstOrDefault(ItIsContentControl);
+                return ReferenceEquals(parentOfThisCombobox, parentOfOtherCombobox);
+            };
+
+            var groups = Comboboxes
+                .Where(combobox => combobox.VisualTreeParents.Any(ItIsContentControl))
+                .Where(inSameOrWithoutDataTemplate)
+                .Where(combobox => combobox.GroupName == target.GroupName)
+                .ToList();
+            return groups;
+        }
+
         private void OnFuzzySearchComboboxLoaded(object sender, RoutedEventArgs e)
         {
             DependencyObject current = this;
@@ -355,8 +438,17 @@ namespace Controls.FuzzySearchComboBox
             var fuzzySearchCombobox = ((FuzzySearchCombobox)o);
             fuzzySearchCombobox.SetSelectedItem(item);
 
+            if (fuzzySearchCombobox.DoAutocomplete)
+            {
+                ParentsAutoComplete(fuzzySearchCombobox);
+                UpdateGroupValidation(fuzzySearchCombobox);
+            }
+
             Logger.DebugFormat(LoggingMessages.SelectedItemSettedTo, item != null && item.Value.Value != null ? item.Value.Value.ToString() : "null", fuzzySearchCombobox.NameForDebug);
         }
+
+        
+
 
         private static void ParentItemSourceChangedCallBack(DependencyObject o, DependencyPropertyChangedEventArgs args)
         {
