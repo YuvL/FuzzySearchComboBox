@@ -177,6 +177,12 @@ namespace Controls.FuzzySearchComboBox
             }
         }
 
+        public bool ShowDeletedItems
+        {
+            get { return (bool)GetValue(ShowDeletedItemsProperty); }
+            set { SetValue(ShowDeletedItemsProperty, value); }
+        }
+
         public string Text { get { return (string)GetValue(TextProperty); } set { SetValue(TextProperty, value); } }
 
         private const int DefaultBounceProtectionDelay = 200;
@@ -228,9 +234,12 @@ namespace Controls.FuzzySearchComboBox
 
         public static readonly DependencyProperty NoDataTextProperty = DependencyProperty.Register("NoDataText", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata(NoDataTextDefault));
 
+        public static readonly DependencyProperty ShowDeletedItemsProperty =
+            DependencyProperty.Register("ShowDeletedItems", typeof(bool), typeof(FuzzySearchCombobox), new PropertyMetadata(false));
+
         public static ResourceDictionary ResourceDictionary { get; set; }
 
-        #region grop behaivair............................................................................
+        #region grop behavior............................................................................
 
         public bool DoAutocomplete { get; set; }
 
@@ -278,7 +287,7 @@ namespace Controls.FuzzySearchComboBox
 
                 //the lowest level always in the group is valid (City)
                 if (parentCombobox != null && childCombobox == null)
-                continue;
+                    continue;
 
                 //the highest level (Country)
                 if (parentCombobox == null && childCombobox != null)
@@ -447,7 +456,7 @@ namespace Controls.FuzzySearchComboBox
             Logger.DebugFormat(LoggingMessages.SelectedItemSettedTo, item != null && item.Value.Value != null ? item.Value.Value.ToString() : "null", fuzzySearchCombobox.NameForDebug);
         }
 
-        
+
 
 
         private static void ParentItemSourceChangedCallBack(DependencyObject o, DependencyPropertyChangedEventArgs args)
@@ -815,6 +824,7 @@ namespace Controls.FuzzySearchComboBox
             UpdateFilters();
 
             List<KeyValuePair<int?, ValueContainer>> searchSource = null;
+            List<KeyValuePair<int?, ValueContainer>> searchSourceDeleted = null;
             var isItemSelected = false;
             char[] wordSplitters = null;
             var countToOutputValues = 0;
@@ -823,7 +833,10 @@ namespace Controls.FuzzySearchComboBox
             context.Send(state =>
             {
                 if (InternalItemsSource != null)
+                {
                     searchSource = InternalItemsSource.Where(x => !x.Value.IsDeleted).ToList();
+                    searchSourceDeleted = InternalItemsSource.Where(x => x.Value.IsDeleted).ToList();
+                }
                 isItemSelected = SelectedItem != null;
                 wordSplitters = WordSplitters;
                 countToOutputValues = CountToOutputValues;
@@ -835,19 +848,21 @@ namespace Controls.FuzzySearchComboBox
             if (searchSource == null) return null;
 
             var showAllItems = string.IsNullOrEmpty(searchSubstring) || string.IsNullOrWhiteSpace(searchSubstring) || isItemSelected;
+            var deletedItems = searchSourceDeleted.OrderBy(pair => pair.Value.Value).Select(pair => new ResultItem(pair)).ToList();
+
             if (showAllItems)
             {
                 var result = searchSource.OrderBy(pair => pair.Value.Value).Select(pair => new ResultItem(pair)).ToList();
                 if (!result.Any())
                 {
-                    TryAddAlwaysShowItem(searchResult, AlwaysShow);
+                    TryAddAlwaysShowItemOrShowDeleted(searchResult, AlwaysShow, deletedItems);
                     return searchResult;
                 }
 
                 searchResult.Add(_allItemsHeader); //заголовок-разграничитель 
                 searchResult.AddRange(result);
 
-                TryAddAlwaysShowItem(searchResult, AlwaysShow);
+                TryAddAlwaysShowItemOrShowDeleted(searchResult, AlwaysShow, deletedItems);
 
                 return searchResult;
             }
@@ -895,14 +910,54 @@ namespace Controls.FuzzySearchComboBox
                 searchResult.AddRange(fuzzySearchResult);
             }
 
-            TryAddAlwaysShowItem(searchResult, AlwaysShow);
+            // ищем совпадения в удаленных элементах, если включено их отображение
+            var showDeletedItems = false;
+            Application.Current.Dispatcher.Invoke(new Action(() => { showDeletedItems = ShowDeletedItems; }));
+            if (showDeletedItems)
+            {
+                KeyValuePair<int?, ValueContainer>[] containsElementsFromDeleted = { };
+
+                var searchWordsArrayFromDeleted = searchSubstring.Split(wordSplitters).Distinct().Where(x => !string.IsNullOrEmpty(x)).ToArray();
+                var startsWithElementsFromDeleted = searchSourceDeleted
+                    .Where(x => x.Value.Value.StartsWith(searchSubstring, StringComparison.InvariantCultureIgnoreCase))
+                    .ToArray();
+                tooFewResults = startsWithElementsFromDeleted.Length < countToOutputValues;
+                if (tooFewResults)
+                    containsElementsFromDeleted = searchSourceDeleted
+                        .Where(x => ContainsSearch(x.Value.Value.ToLowerInvariant().Split(WordSplitters).Where(y => !string.IsNullOrEmpty(y)), searchWordsArrayFromDeleted))
+                        .Except(startsWithElementsFromDeleted).ToArray();
+
+                var strongSearchResultFromDeleted = startsWithElementsFromDeleted;
+                if (strongSearchResultFromDeleted.Length < countToOutputValues)
+                    strongSearchResultFromDeleted = strongSearchResultFromDeleted.Concat(containsElementsFromDeleted).ToArray();
+
+                if (strongSearchResultFromDeleted.Any())
+                {
+                    deletedItems = strongSearchResultFromDeleted.Take(countToOutputValues)
+                            .Select(pair => new ResultItem(pair))
+                            .ToList();
+                }
+                else
+                {
+                    deletedItems = new List<ResultItem>();
+                }
+            }
+
+            TryAddAlwaysShowItemOrShowDeleted(searchResult, AlwaysShow, deletedItems);
 
             return searchResult;
         }
 
-        private void TryAddAlwaysShowItem(List<ResultItem> searchResult, ResultItem alwaysShowItem)
+        private void TryAddAlwaysShowItemOrShowDeleted(List<ResultItem> searchResult, ResultItem alwaysShowItem, List<ResultItem> deletedItems)
         {
-            if (alwaysShowItem != null)
+            var showDeletedItems = false;
+            Application.Current.Dispatcher.Invoke(new Action(() => { showDeletedItems = ShowDeletedItems; }));
+            if (showDeletedItems && deletedItems.Count > 0)
+            {
+                searchResult.Add(_renamedItemsHeader);
+                searchResult.AddRange(deletedItems);
+            }
+            else if (alwaysShowItem != null)
             {
                 searchResult.Add(_renamedItemsHeader); //заголовок-разграничитель 
                 searchResult.Add(alwaysShowItem);
@@ -1112,7 +1167,7 @@ namespace Controls.FuzzySearchComboBox
             {
                 var resultTypeName =FuzzySearchCombobox.GetResultTypeName(resultType) ?? resultType.GetName();
                 KeyValuePair = new KeyValuePair<int?, ValueContainer>(-Math.Abs(resultTypeName.GetHashCode()) - 1, new ValueContainer(null, resultTypeName));
-                 ItemType = ItemType.Header;
+                ItemType = ItemType.Header;
             }
 
             public override string ToString()
