@@ -6,3 +6,5 @@ FuzzySearchComboBox/obj/
 /DemoApplication/obj/Debug
 /FuzzySearchComboBox/lib
 /packages/log4net.2.0.3
+/DemoApplication/bin/Release
+/DemoApplication/obj/Release

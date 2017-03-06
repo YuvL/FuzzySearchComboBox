@@ -7,5 +7,6 @@
     <s:String x:Key="Strong">По алфавиту</s:String>
     <s:String x:Key="Fuzzy">Нечетко</s:String>
     <s:String x:Key="Renamed">Переименовано</s:String>
+    <s:String x:Key="ShowAll">Показать все</s:String>
 
 </ResourceDictionary>

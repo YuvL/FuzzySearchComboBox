@@ -69,6 +69,53 @@ namespace DemoApplication.DemoData
             addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(9, "Andalucia"), new ValueContainer(25, "Jaen")));
             addresses.Add(Tuple.Create(new ValueContainer(3, "Spain"), new ValueContainer(9, "Andalucia"), new ValueContainer(26, "Granada")));
 
+            //Finland
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), cityEmpty));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(27, "Helsinki")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(28, "Espoo")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(29, "Lohja")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(30, "Vantaa")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(31, "Kauniainen")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(32, "Hyvinkаа")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(33, "Kerava")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(34, "Karkkila")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(35, "Kirkkonummi")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(36, "Pornainen")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(37, "Siuntio")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(38, "Tuusula")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(39, "Karjalohja")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(40, "Nummi-Pusula")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(10, "Uusimaa"), new ValueContainer(41, "Vihti")));
+
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(11, "Etela-Savo"), cityEmpty));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(11, "Etela-Savo"), new ValueContainer(42, "Mikkeli")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(11, "Etela-Savo"), new ValueContainer(43, "Juva")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(11, "Etela-Savo"), new ValueContainer(44, "Otava")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(11, "Etela-Savo"), new ValueContainer(45, "Pieksamaki")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(11, "Etela-Savo"), new ValueContainer(46, "Savonlinna")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(11, "Etela-Savo"), new ValueContainer(47, "Haukivesi")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(11, "Etela-Savo"), new ValueContainer(48, "Kangasniemi")));
+
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), cityEmpty));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(49, "Rovaniemi")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(50, "Kolari")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(51, "Inari")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(52, "Tornio")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(53, "Kemi")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(54, "Sodankyla")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(55, "Keminmaa")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(56, "Ylitornio")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(57, "Ranua")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(58, "Salla")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(59, "Pello")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(60, "Posio")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(61, "Simo")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(62, "Tervola")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(63, "Muonio")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(64, "Utsjoki")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(65, "Savukoski")));
+            addresses.Add(Tuple.Create(new ValueContainer(4, "Finland"), new ValueContainer(12, "Lappi"), new ValueContainer(66, "Pelkosenniemi")));
+
             return addresses;
         }
 

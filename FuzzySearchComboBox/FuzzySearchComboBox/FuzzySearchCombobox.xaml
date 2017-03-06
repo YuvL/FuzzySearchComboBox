@@ -85,6 +85,25 @@
                 
             </Style.Triggers>
         </Style>
+        <Style x:Key="LinkButton"
+               TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <TextBlock TextDecorations="Underline">
+                                <ContentPresenter />
+                        </TextBlock>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="Blue" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Foreground" Value="Red" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <DataTemplate x:Key="CommonItemDataTemplate">
             <TextBlock Margin="7,0,5,0" Focusable="True" MouseEnter="SearchResultPanelItem_OnMouseEnter"
                        MouseUp="SearchResultPanelItem_OnMouseUp" TextOptions.TextFormattingMode="Display"
@@ -107,9 +126,17 @@
                 <Rectangle Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Fill="#FF3776A2" />
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="ButtonItemDataTemplate">
+            <Button HorizontalAlignment="Left" VerticalAlignment="Top"
+                    Margin="6,0,0,0"
+                    Style="{StaticResource LinkButton}"
+                    Click="ShowAllButton_OnClick"
+                    Content="Показать все"/>
+        </DataTemplate>
         <fc:SearchResultPanelItemDataTemplateSelector x:Key="ItemTemplateSelector"
-                                                                  HeaderItemDataTemplate="{StaticResource HeaderItemDataTemplate}"
-                                                                  CommonItemDataTemplate="{StaticResource CommonItemDataTemplate}" />
+                                                      HeaderItemDataTemplate="{StaticResource HeaderItemDataTemplate}"
+                                                      CommonItemDataTemplate="{StaticResource CommonItemDataTemplate}"
+                                                      ButtonItemDataTemplate="{StaticResource ButtonItemDataTemplate}"/>
         <Style x:Key="HeaderItemContainerStyleBase" TargetType="ListBoxItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -120,8 +147,8 @@
             <Setter Property="Focusable" Value="False" />
         </Style>
         <fc:SearchResultPanelItemContainerStyleSelector x:Key="ItemContainerStyleSelector"
-                                                                    CommonStyle="{StaticResource HeaderItemContainerStyleBase}"
-                                                                    HeaderStyle="{StaticResource HeaderItemContainerStyleHeader}" />
+                                                        CommonStyle="{StaticResource HeaderItemContainerStyleBase}"
+                                                        HeaderStyle="{StaticResource HeaderItemContainerStyleHeader}" />
 
         <SolidColorBrush x:Key="ListBorder" Color="#828790" />
         <Style x:Key="ListBoxStyle" TargetType="{x:Type ListBox}">

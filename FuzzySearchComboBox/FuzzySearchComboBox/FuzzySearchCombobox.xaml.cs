@@ -667,7 +667,7 @@ namespace Controls.FuzzySearchComboBox
             SearchResultPanel.FocusItem(_selection);
         }
 
-        //переносит фоус на popup
+        //переносит фокус на popup
         private void InputTextBox_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Tab)
@@ -782,7 +782,7 @@ namespace Controls.FuzzySearchComboBox
             return valueContainer == null ? null : valueContainer.Childs;
         }
 
-        private void Search()
+        private void Search(bool showAllStrong = false)
         {
             var searchSubstring = InputTextBox.Text.Trim().ToLowerInvariant();
 
@@ -796,7 +796,7 @@ namespace Controls.FuzzySearchComboBox
             _searchTask = new Task(() =>
             {
                 IsSearches = true;
-                try { searchResult = SearchImpl(_synchronizationContext, searchSubstring); }
+                try { searchResult = SearchImpl(_synchronizationContext, searchSubstring, showAllStrong); }
                 catch (OperationCanceledException) { }
                 finally
                 {
@@ -819,7 +819,7 @@ namespace Controls.FuzzySearchComboBox
             _searchTask.Start();
         }
 
-        private List<ResultItem> SearchImpl(SynchronizationContext context, string searchSubstring)
+        private List<ResultItem> SearchImpl(SynchronizationContext context, string searchSubstring, bool showAllStrong = false)
         {
             UpdateFilters();
 
@@ -887,7 +887,13 @@ namespace Controls.FuzzySearchComboBox
                 searchResult.Add(_strongHeader);
 
                 //результаты строгого соответствия
-                searchResult.AddRange(strongSearchResult.Take(countToOutputValues).Select(pair => new ResultItem(pair)));
+                searchResult.AddRange(showAllStrong
+                    ? strongSearchResult.Select(pair => new ResultItem(pair))
+                    : strongSearchResult.Take(countToOutputValues).Select(pair => new ResultItem(pair)));
+
+                //если будут показаны не все найденные элементы, то добавляем кнопку "Показать все"
+                if (strongSearchResult.Length > countToOutputValues && !showAllStrong)
+                    searchResult.Add(_showAllButton);
             }
 
             //элементы, удовлетворяющие условию нечеткого поиска 
@@ -1118,6 +1124,13 @@ namespace Controls.FuzzySearchComboBox
         private ResultItem _renamedItemsHeader = new ResultItem(ResultType.Renamed);
         private ResultItem _strongHeader = new ResultItem(ResultType.Strong);
 
+        private readonly ResultItem _showAllButton = new ResultItem(ResultType.ShowAll);
+        private void ShowAllButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            Search(true);
+            Keyboard.Focus(InputTextBox);
+        }
+
         //запускает поиск
         private Timer _bounceProtection = new Timer();
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
@@ -1149,7 +1162,7 @@ namespace Controls.FuzzySearchComboBox
             }
         }
 
-        private bool SelectionIsHeader { get { return _selection != null && _selection.ItemType == ItemType.Header; } }
+        private bool SelectionIsHeader { get { return _selection != null && (_selection.ItemType == ItemType.Header || _selection.ItemType == ItemType.Button); } }
 
         private List<DependencyObject> VisualTreeParents { get; set; }
 
@@ -1165,9 +1178,9 @@ namespace Controls.FuzzySearchComboBox
 
             public ResultItem(ResultType resultType)
             {
-                var resultTypeName =FuzzySearchCombobox.GetResultTypeName(resultType) ?? resultType.GetName();
+                var resultTypeName = GetResultTypeName(resultType) ?? resultType.GetName();
                 KeyValuePair = new KeyValuePair<int?, ValueContainer>(-Math.Abs(resultTypeName.GetHashCode()) - 1, new ValueContainer(null, resultTypeName));
-                ItemType = ItemType.Header;
+                ItemType = resultType == ResultType.ShowAll ? ItemType.Button : ItemType.Header;
             }
 
             public override string ToString()

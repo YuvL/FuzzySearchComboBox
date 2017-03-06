@@ -12,7 +12,7 @@ namespace Controls.FuzzySearchComboBox
         public override Style SelectStyle(object item, DependencyObject container)
         {
             var resultItem = item as FuzzySearchCombobox.ResultItem;
-            return resultItem != null && resultItem.ItemType == ItemType.Header ? HeaderStyle : CommonStyle;
+            return resultItem != null && (resultItem.ItemType == ItemType.Header || resultItem.ItemType == ItemType.Button) ? HeaderStyle : CommonStyle;
         }
     }
 }

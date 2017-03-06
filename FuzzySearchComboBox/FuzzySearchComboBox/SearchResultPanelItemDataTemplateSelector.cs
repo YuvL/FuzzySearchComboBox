@@ -1,13 +1,13 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-// ReSharper disable once CheckNamespace
 namespace Controls.FuzzySearchComboBox
 {
     public class SearchResultPanelItemDataTemplateSelector : DataTemplateSelector
     {
         public DataTemplate CommonItemDataTemplate { get; set; }
         public DataTemplate HeaderItemDataTemplate { get; set; }
+        public DataTemplate ButtonItemDataTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
@@ -21,9 +21,13 @@ namespace Controls.FuzzySearchComboBox
 
                 case ItemType.Header:
                     return HeaderItemDataTemplate;
-            }
 
-            return HeaderItemDataTemplate;
+                case ItemType.Button:
+                    return ButtonItemDataTemplate;
+
+                default:
+                    return HeaderItemDataTemplate;
+            }
         }
     }
 }
