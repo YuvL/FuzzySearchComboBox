@@ -1095,6 +1095,8 @@ namespace Controls.FuzzySearchComboBox
 
                 InputTextBox.Text = keyValuePair.Value.ToString();
                 InputTextBox.SelectionStart = InputTextBox.Text.Length;
+                if (!string.IsNullOrEmpty(InputTextBox.Text))
+                    NoData = false;
                 return;
             }
 
