@@ -26,6 +26,7 @@ namespace DemoApplication.Views
             InitializeComponent();
             GridScope.DataContext = new AddressViewModel();
             GridScopeA.DataContext = new AddressAutocompleteViewModel();
+            GridScopeB.DataContext = new AddressViewModel();
 
             Loaded += (sender, args) => FocusManager.SetFocusedElement(GridScope, CountryCombobox); ;
         }

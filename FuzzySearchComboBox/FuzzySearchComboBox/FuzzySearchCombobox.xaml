@@ -131,7 +131,7 @@
                     Margin="6,0,0,0"
                     Style="{StaticResource LinkButton}"
                     Click="ShowAllButton_OnClick"
-                    Content="Показать все"/>
+                    Content="{Binding RelativeSource={RelativeSource AncestorType=fc:FuzzySearchCombobox}, Path=ShowAllButtonText}" />
         </DataTemplate>
         <fc:SearchResultPanelItemDataTemplateSelector x:Key="ItemTemplateSelector"
                                                       HeaderItemDataTemplate="{StaticResource HeaderItemDataTemplate}"
@@ -191,7 +191,8 @@
                                 Background="{TemplateBinding Panel.Background}"
                                 SnapsToDevicePixels="True">
                             <StackPanel>
-                                <fc:FiltersNotification Text="{Binding RelativeSource={RelativeSource AncestorType=fc:FuzzySearchCombobox}, Path=Filters}" />
+                                <fc:FiltersNotification x:Name="FiltersNotification" Text="{Binding RelativeSource={RelativeSource AncestorType=fc:FuzzySearchCombobox}, Path=Filters}"
+                                                        FilteredByLabel="{Binding RelativeSource={RelativeSource AncestorType= fc:FuzzySearchCombobox}, Path=FilteredByLabel}"/>
                                 <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False" Height="{TemplateBinding ActualHeight}" MaxHeight="245">
                                     <VirtualizingStackPanel IsItemsHost="True" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                                 </ScrollViewer>
