@@ -14,7 +14,7 @@
                     <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
                 </Style>
             </StackPanel.Resources>
-            <TextBlock Text="Отфильтровано по: "/>
+            <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=fuzzySearchCombobox:FiltersNotification}, Path=FilteredByLabel}" />
             <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=fuzzySearchCombobox:FiltersNotification}, Path=Text, Mode=TwoWay}"  TextWrapping="Wrap" TextOptions.TextFormattingMode="Display"/>
         </StackPanel>
     </Border>

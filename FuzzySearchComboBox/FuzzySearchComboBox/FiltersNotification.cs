@@ -11,6 +11,13 @@ namespace Controls.FuzzySearchComboBox
     /// </summary>
     public partial class FiltersNotification : UserControl, INotifyPropertyChanged
     {
+        public static readonly DependencyProperty FilteredByLabelProperty = DependencyProperty.Register("FilteredByLabel", typeof(string), typeof(FiltersNotification), new PropertyMetadata("Filtered by:"));
+        /// <summary>
+        /// Label for "filtered by" panel
+        /// </summary>
+        public string FilteredByLabel
+        { get { return (string)GetValue(FilteredByLabelProperty); } set { SetValue(FilteredByLabelProperty, value); } }
+
         public string Text { get { return (string) GetValue(TextProperty); } set { SetValue(TextProperty, value); } }
 
         public bool TextEmpty

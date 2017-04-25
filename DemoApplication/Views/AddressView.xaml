@@ -8,7 +8,6 @@
              d:DesignHeight="300" d:DesignWidth="700">
     <UserControl.Resources>
         <Style TargetType="Label" BasedOn="{StaticResource CommonStyle}"/>
-        <Style TargetType="{x:Type fuzzySearchComboBox:FuzzySearchCombobox}" BasedOn="{StaticResource CommonStyle}"/>
     </UserControl.Resources>
     <Grid>
         <TabControl>
@@ -142,9 +141,87 @@
                     <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4"
                             Height="23" Width="75" Content="Test Address"
                             HorizontalAlignment="Center"
-                            Click="ButtonBase_OnClick"/>
+                            Click="ButtonBase_OnClick" />
 
                 </Grid>
+            </TabItem>
+
+            <TabItem Header="Address with Spain Local">
+                <TabItem.Resources>
+                    <Style x:Key="CommonStyleLocal" TargetType="FrameworkElement">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="Margin" Value="5"/>
+                    </Style>
+                    <Style TargetType="fuzzySearchComboBox:FuzzySearchCombobox" BasedOn="{StaticResource CommonStyleLocal}">
+                        <Setter Property="EmptyResultHeader" Value="Sin información"/>
+                        <Setter Property="AllResultHeader" Value="Todo"/>
+                        <Setter Property="StrongResultHeader" Value="Alfabético"/>
+                        <Setter Property="FuzzyResultHeader" Value="Indistintamente"/>
+                        <Setter Property="RenamedResultHeader" Value="Rebautizado"/>
+                        <Setter Property="ShowAllButtonText" Value="Mostrar todos"/>
+                        <Setter Property="FilteredByLabel" Value="Filtrada por: "/>
+                    </Style>
+
+                </TabItem.Resources>
+                <Grid Name ="GridScopeB" KeyboardNavigation.TabNavigation="Cycle" FocusManager.IsFocusScope="True" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Content="Country"/>
+                    <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="0" Grid.Column="1"
+                                                            Name="CountryComboboxB"
+                                                            GroupName="1C3717ED-F297-4EE2-A42E-676F86016CAB"
+                                                            ParentItemsSource="{Binding AddressDictionary}"
+                                                            ChildItemsSource="{Binding ElementName=RegionComboboxB, Path=ParentItems}"
+                                                            SelectedKey="{Binding CountryID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                            KeyboardNavigation.TabNavigation="Local"
+                                                            TabIndex="0"/>
+
+                    <Label Grid.Row="1" Grid.Column="0" Content="Region"/>
+                    <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="1" Grid.Column="1"
+                                                            Name="RegionComboboxB"
+                                                            GroupName="1C3717ED-F297-4EE2-A42E-676F86016CAB"
+                                                            CountToOutputValues="5"
+                                                            ParentItemsSource="{Binding ElementName=CountryComboboxB, Path=ChildItems}"
+                                                            ChildItemsSource="{Binding ElementName=CityComboboxB, Path=ParentItems}"
+                                                            SelectedKey="{Binding RegionID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                            KeyboardNavigation.TabNavigation="Local"
+                                                            TabIndex="1"/>
+
+                    <Label Grid.Row="2" Grid.Column="0" Content="City"/>
+                    <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="2" Grid.Column="1"
+                                                            Name="CityComboboxB"
+                                                            GroupName="1C3717ED-F297-4EE2-A42E-676F86016CAB"
+                                                            CountToOutputValues="5"
+                                                            ParentItemsSource="{Binding ElementName=RegionComboboxB, Path=ChildItems}"
+                                                            SelectedKey="{Binding CityID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                            KeyboardNavigation.TabNavigation="Local"
+                                                            TabIndex="2"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                               Margin="10,10,0,10" HorizontalAlignment="Left"
+                               Text="1. FuzzySearchComboBox show own constants alwais in spainisn in this Tab."/>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                               Margin="10,10,0,10" HorizontalAlignment="Left"
+                               Text="2. FuzzySearchComboBox show own constants in english in other Tabs."/>
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+                               Margin="10,10,0,10" HorizontalAlignment="Left"
+                               Text="3. If the application is running with a parameter --Style RussianStyle.xaml, FuzzySearchComboBox show own constants in russian in other Tabs."/>
+                    
+
+                </Grid>
+
             </TabItem>
         </TabControl>
     </Grid>

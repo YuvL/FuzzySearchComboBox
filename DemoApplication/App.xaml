@@ -4,12 +4,40 @@
              xmlns:local="clr-namespace:DemoApplication"
              xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=PresentationFramework"
              xmlns:views="clr-namespace:DemoApplication.Views"
-             StartupUri="MainWindow.xaml">
+             xmlns:fuzzySearchComboBox="clr-namespace:Controls.FuzzySearchComboBox;assembly=Controls"
+             Startup="OnApplicationStartup">
     <Application.Resources>
-        <Style x:Key="CommonStyle" TargetType="FrameworkElement">
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Margin" Value="5"/>
-        </Style>
-        <views:InverseBoolToVisConverter x:Key="InverseBoolToVisConverter" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary  Source="pack://application:,,,/Localization/Localization.Base.xaml"/>
+                <ResourceDictionary  Source="pack://application:,,,/Styles/DefaultStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <ResourceDictionary x:Key="DefaultStyle.xaml"  Source="pack://application:,,,/Styles/DefaultStyle.xaml"/>
+            <ResourceDictionary x:Key="RussianStyle.xaml"  Source="pack://application:,,,/Styles/RussianStyle.xaml"/>
+            <ResourceDictionary x:Key="SpainStyle.xaml" Source="pack://application:,,,/Styles/SpainStyle.xaml"/>
+            <ResourceDictionary x:Key="EnglishStyle.xaml" Source="pack://application:,,,/Styles/EnglishStyle.xaml"/>
+
+
+            <Style x:Key="CommonStyle" TargetType="FrameworkElement">
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Margin" Value="5"/>
+            </Style>
+            <Style TargetType="fuzzySearchComboBox:FuzzySearchCombobox" BasedOn="{StaticResource CommonStyle}" >
+                <Setter Property="EmptyResultHeader" Value="{StaticResource EmptyResultHeader}"/>
+                <Setter Property="AllResultHeader" Value="{StaticResource AllResultHeader}"/>
+                <Setter Property="StrongResultHeader" Value="{StaticResource StrongResultHeader}"/>
+                <Setter Property="FuzzyResultHeader" Value="{StaticResource FuzzyResultHeader}"/>
+                <Setter Property="RenamedResultHeader" Value="{StaticResource RenamedResultHeader}"/>
+                <Setter Property="ShowAllButtonText" Value="{StaticResource ShowAllButtonText}"/>
+                <Setter Property="FilteredByLabel" Value="{StaticResource FilteredByLabel}"/>
+            </Style>
+
+            <views:InverseBoolToVisConverter x:Key="InverseBoolToVisConverter" />
+
+            
+            
+            
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

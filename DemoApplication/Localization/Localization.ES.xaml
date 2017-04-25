@@ -1,0 +1,13 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:DemoApplication.Localization"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+    <system:String x:Key="EmptyResultHeader">Sin información</system:String>
+    <system:String x:Key="AllResultHeader">Todo</system:String>
+    <system:String x:Key="StrongResultHeader">Alfabético</system:String>
+    <system:String x:Key="FuzzyResultHeader">Indistintamente</system:String>
+    <system:String x:Key="RenamedResultHeader">Rebautizado</system:String>
+    <system:String x:Key="ShowAllButtonText">Mostrar todos</system:String>
+    <system:String x:Key="FilteredByLabel">Filtrada por: </system:String>
+
+</ResourceDictionary>

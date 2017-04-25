@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,6 +18,56 @@ namespace Controls.FuzzySearchComboBox
 {
     public partial class FuzzySearchCombobox : INotifyPropertyChanged
     {
+        public static readonly DependencyProperty EmptyResultHeaderProperty = DependencyProperty.Register("EmptyResultHeader", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata("Empty"));
+        /// <summary>
+        /// Header for empty search result
+        /// </summary>
+        public string EmptyResultHeader
+        { get { return (string)GetValue(EmptyResultHeaderProperty); } set { SetValue(EmptyResultHeaderProperty, value); } }
+
+        public static readonly DependencyProperty AllResultHeaderProperty = DependencyProperty.Register("AllResultHeader", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata("All"));
+        /// <summary>
+        /// Header for all search result
+        /// </summary>
+        public string AllResultHeader
+        { get { return (string)GetValue(AllResultHeaderProperty); } set { SetValue(AllResultHeaderProperty, value); } }
+
+        public static readonly DependencyProperty StrongResultHeaderProperty = DependencyProperty.Register("StrongResultHeader", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata("Strong"));
+        /// <summary>
+        /// Header for alphabetically search result
+        /// </summary>
+        public string StrongResultHeader
+        { get { return (string)GetValue(StrongResultHeaderProperty); } set { SetValue(StrongResultHeaderProperty, value); } }
+
+        public static readonly DependencyProperty FuzzyResultHeaderProperty = DependencyProperty.Register("FuzzyResultHeader", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata("Fuzzy"));
+        /// <summary>
+        /// Header for fuzzy search result
+        /// </summary>
+        public string FuzzyResultHeader
+        { get { return (string)GetValue(FuzzyResultHeaderProperty); } set { SetValue(FuzzyResultHeaderProperty, value); } }
+
+        public static readonly DependencyProperty RenamedResultHeaderProperty = DependencyProperty.Register("RenamedResultHeader", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata("Renamed"));
+        /// <summary>
+        /// Header for renamed search result
+        /// </summary>
+        public string RenamedResultHeader
+        { get { return (string)GetValue(RenamedResultHeaderProperty); } set { SetValue(RenamedResultHeaderProperty, value); } }
+
+        public static readonly DependencyProperty ShowAllButtonTextProperty = DependencyProperty.Register("ShowAllButtonText", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata("ShowAll"));
+        /// <summary>
+        /// Text for ShowAll button
+        /// </summary>
+        public string ShowAllButtonText
+        { get { return (string)GetValue(ShowAllButtonTextProperty); } set { SetValue(ShowAllButtonTextProperty, value); } }
+
+        public static readonly DependencyProperty FilteredByLabelProperty = DependencyProperty.Register("FilteredByLabel", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata("Filtered by:"));
+        /// <summary>
+        /// Label for "filtered by" panel
+        /// </summary>
+        public string FilteredByLabel
+        { get { return (string)GetValue(FilteredByLabelProperty); } set { SetValue(FilteredByLabelProperty, value); } }
+
+
         public ResultItem AlwaysShow { get; private set; }
 
         public int BounceProtectionDelay { get; set; }
@@ -305,11 +356,6 @@ namespace Controls.FuzzySearchComboBox
 
         #endregion............................................................................................
 
-        private void CreateResourceDictionary()
-        {
-            ResourceDictionary = new ResourceDictionary { Source = new Uri("/Controls;component/Resources/Localization.Base.xaml", UriKind.RelativeOrAbsolute) };
-        }
-
         static FuzzySearchCombobox()
         {
             EventManager.RegisterClassHandler(typeof(FuzzySearchCombobox), Mouse.MouseWheelEvent, new MouseWheelEventHandler(OnMouseWheel), true);
@@ -341,13 +387,6 @@ namespace Controls.FuzzySearchComboBox
             _fuzzySearchComboboxCreatedAt = DateTime.Now.ToString("HH:mm:ss.fff");
             Logger.DebugFormat(LoggingMessages.FuzzySearchComboBoxCreatedFormat, NameForDebug);
 
-        }
-
-        public static string GetResultTypeName(ResultType resultType)
-        {
-            if(ResourceDictionary != null && ResourceDictionary.Contains(resultType.ToString()))
-                return ResourceDictionary[resultType.ToString()] as string ?? default(string);
-            return default(string);
         }
 
         protected virtual void OnPropertyChanged(string propertyName = null)
@@ -402,22 +441,19 @@ namespace Controls.FuzzySearchComboBox
                 VisualTreeParents.Add(current);
             }
 
-            CreateResourceDictionaryAndUpdareUi();
+            UpdateUiAcordingStyle();
 
             if (IsFocused)
                 InputTextBox.Focus();
         }
 
-        private void CreateResourceDictionaryAndUpdareUi()
+        private void UpdateUiAcordingStyle()
         {
-            CreateResourceDictionary();
-            if (ResourceDictionary != null)
-            {
-                _allItemsHeader = new ResultItem(ResultType.All);
-                _fuzzyHeader = new ResultItem(ResultType.Fuzzy);
-                _renamedItemsHeader = new ResultItem(ResultType.Renamed);
-                _strongHeader = new ResultItem(ResultType.Strong);
-            }
+            _allItemsHeader = new ResultItem(ResultType.All, AllResultHeader);
+            _strongHeader = new ResultItem(ResultType.Strong, StrongResultHeader);
+            _fuzzyHeader = new ResultItem(ResultType.Fuzzy, FuzzyResultHeader);
+            _renamedItemsHeader = new ResultItem(ResultType.Renamed, RenamedResultHeader);
+            _showAllButton = new ResultItem(ResultType.ShowAll, ShowAllButtonText);
         }
 
         private static void OnMouseWheel(object sender, MouseWheelEventArgs e)
@@ -1118,15 +1154,15 @@ namespace Controls.FuzzySearchComboBox
             AlwaysShow = null;
         }
 
-        private ResultItem _allItemsHeader = new ResultItem(ResultType.All);
+        private ResultItem _allItemsHeader;
 
         //for debug
         private readonly string _fuzzySearchComboboxCreatedAt;
-        private ResultItem _fuzzyHeader = new ResultItem(ResultType.Fuzzy);
-        private ResultItem _renamedItemsHeader = new ResultItem(ResultType.Renamed);
-        private ResultItem _strongHeader = new ResultItem(ResultType.Strong);
+        private ResultItem _fuzzyHeader;
+        private ResultItem _renamedItemsHeader;
+        private ResultItem _strongHeader;
 
-        private readonly ResultItem _showAllButton = new ResultItem(ResultType.ShowAll);
+        private ResultItem _showAllButton;
         private void ShowAllButton_OnClick(object sender, RoutedEventArgs e)
         {
             Search(true);
@@ -1142,7 +1178,7 @@ namespace Controls.FuzzySearchComboBox
         private ResultItem _selection;
         private int? _setSelectedKeyRequest;
         private readonly SynchronizationContext _synchronizationContext;
-
+        
         private bool Checked { get { return (bool)GetValue(CheckedProperty); } set { SetValue(CheckedProperty, value); } }
 
         private Dictionary<int?, ValueContainer> InternalItemsSource
@@ -1178,9 +1214,8 @@ namespace Controls.FuzzySearchComboBox
                 ItemType = ItemType.Common;
             }
 
-            public ResultItem(ResultType resultType)
+            public ResultItem(ResultType resultType, string resultTypeName)
             {
-                var resultTypeName = GetResultTypeName(resultType) ?? resultType.GetName();
                 KeyValuePair = new KeyValuePair<int?, ValueContainer>(-Math.Abs(resultTypeName.GetHashCode()) - 1, new ValueContainer(null, resultTypeName));
                 ItemType = resultType == ResultType.ShowAll ? ItemType.Button : ItemType.Header;
             }
