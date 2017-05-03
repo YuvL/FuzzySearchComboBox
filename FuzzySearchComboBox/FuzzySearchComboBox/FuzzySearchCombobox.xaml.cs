@@ -18,6 +18,13 @@ namespace Controls.FuzzySearchComboBox
 {
     public partial class FuzzySearchCombobox : INotifyPropertyChanged
     {
+        public new static readonly DependencyProperty NameProperty = DependencyProperty.Register("Name", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata("FuzzySearchCombobox"));
+        /// <summary>
+        /// Name for this control (Property added to facilitate automated testing)
+        /// </summary>
+        public new string Name
+        { get { return (string)GetValue(NameProperty); } set { SetValue(NameProperty, value); } }
+
         public static readonly DependencyProperty EmptyResultHeaderProperty = DependencyProperty.Register("EmptyResultHeader", typeof(string), typeof(FuzzySearchCombobox), new PropertyMetadata("Empty"));
         /// <summary>
         /// Header for empty search result
