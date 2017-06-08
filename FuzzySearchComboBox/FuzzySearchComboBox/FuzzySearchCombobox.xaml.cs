@@ -318,18 +318,24 @@ namespace Controls.FuzzySearchComboBox
         {
             var binding = combobox.GetBindingExpression(ParentItemsSourceProperty);
             var parentCombobox = binding.DataItem as FuzzySearchCombobox;
-            if (parentCombobox != null)
+
+            //Do not autocomplete if SelectedItem is not null
+            if (parentCombobox != null && parentCombobox.SelectedItem == null)
             {
                 var childItemsSource = parentCombobox.ChildItemsSource;
                 if (childItemsSource != null && childItemsSource.Count(x => !x.Value.IsDeleted) == 1)
                 {
-                    parentCombobox.SetSelectedItem(childItemsSource.FirstOrDefault());
+                    //Do autocomplete only using not deleted items
+                    parentCombobox.SetSelectedItem(childItemsSource.FirstOrDefault(x => !x.Value.IsDeleted));
                 }
             }
         }
 
         private static void UpdateGroupValidation(FuzzySearchCombobox combobox)
         {
+            if (!combobox.DoAutocomplete)
+                return;
+
             var dependentComboboxes = GetGroupComboboxes(combobox).ToList();
 
             foreach (var item in dependentComboboxes)
@@ -340,7 +346,7 @@ namespace Controls.FuzzySearchComboBox
                 var childCombobox = bindingChild != null ? bindingChild.DataItem as FuzzySearchCombobox : null;
                 var parentCombobox = bindingParent != null ? bindingParent.DataItem as FuzzySearchCombobox : null;
 
-                if(childCombobox == null && parentCombobox == null)
+                if (childCombobox == null && parentCombobox == null)
                     continue;
 
                 //the lowest level always in the group is valid (City)
@@ -489,16 +495,17 @@ namespace Controls.FuzzySearchComboBox
             var item = args.NewValue as KeyValuePair<int?, ValueContainer>?;
             var fuzzySearchCombobox = ((FuzzySearchCombobox)o);
             fuzzySearchCombobox.SetSelectedItem(item);
+            Logger.DebugFormat(LoggingMessages.SelectedItemSettedTo, item != null && item.Value.Value != null ? item.Value.Value.ToString() : "null", fuzzySearchCombobox.NameForDebug);
+
+            if (item == null)
+                return;
 
             if (fuzzySearchCombobox.DoAutocomplete)
             {
                 ParentsAutoComplete(fuzzySearchCombobox);
                 UpdateGroupValidation(fuzzySearchCombobox);
             }
-
-            Logger.DebugFormat(LoggingMessages.SelectedItemSettedTo, item != null && item.Value.Value != null ? item.Value.Value.ToString() : "null", fuzzySearchCombobox.NameForDebug);
         }
-
 
 
 
@@ -1103,6 +1110,7 @@ namespace Controls.FuzzySearchComboBox
             else
                 SelectedItem = null;
             ClosePopup();
+            UpdateGroupValidation(this);
             Keyboard.Focus(InputTextBox);
         }
 
@@ -1121,6 +1129,7 @@ namespace Controls.FuzzySearchComboBox
             SelectedItem = null;
             SelectedValue = null;
             IsValid = GetValidValue(SelectedKey, InputTextBox.Text, SelectedValue);
+            UpdateGroupValidation(this);
         }
 
         private void SetSelectedItem(KeyValuePair<int?, ValueContainer>? item)
@@ -1185,7 +1194,7 @@ namespace Controls.FuzzySearchComboBox
         private ResultItem _selection;
         private int? _setSelectedKeyRequest;
         private readonly SynchronizationContext _synchronizationContext;
-        
+
         private bool Checked { get { return (bool)GetValue(CheckedProperty); } set { SetValue(CheckedProperty, value); } }
 
         private Dictionary<int?, ValueContainer> InternalItemsSource
