@@ -225,9 +225,86 @@
                 </Grid>
             </TabItem>
 
+            <TabItem Header="Address with autocomplete (Data contain predefined values)">
+                <Grid Name ="GridScopeP"  KeyboardNavigation.TabNavigation="Cycle" FocusManager.IsFocusScope="True" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" Content="City"/>
+                    <Label Grid.Row="0" Grid.Column="1"
+                           Content="*" Foreground="Blue"
+                           Visibility="{Binding ElementName=CityComboboxA, Path=IsValid, Converter={StaticResource InverseBoolToVisConverter}}" />
+                    <Label Grid.Row="0" Grid.Column="2"
+                           Content="*" Foreground="Red"
+                           Visibility="{Binding ElementName=CityComboboxA, Path=IsValidInGroup, Converter={StaticResource InverseBoolToVisConverter}}" />
+                    <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="0" Grid.Column="3"
+                                                             Name="CityComboboxP"
+                                                             GroupName="1C3717ED-F297-4EE2-A42E-676F86016CA0"
+                                                             CountToOutputValues="15"
+                                                             DoAutocomplete="True"
+                                                             PredefinedValue="Unknown city"
+                                                             ParentItemsSource="{Binding ElementName=RegionComboboxP, Path=ChildItems}"
+                                                             SelectedKey="{Binding CityID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                             KeyboardNavigation.TabNavigation="Local"
+                                                             TabIndex="0"/>
+
+                    <Label Grid.Row="1" Grid.Column="0" Content="Region"/>
+                    <Label Grid.Row="1" Grid.Column="1"
+                           Content="*" Foreground="Blue"
+                           Visibility="{Binding ElementName=RegionComboboxA, Path=IsValid, Converter={StaticResource InverseBoolToVisConverter}}" />
+                    <Label Grid.Row="1" Grid.Column="2"
+                           Content="*" Foreground="Red"
+                           Visibility="{Binding ElementName=RegionComboboxA, Path=IsValidInGroup, Converter={StaticResource InverseBoolToVisConverter}}" />
+                    <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="1" Grid.Column="3"
+                                                             Name="RegionComboboxP"
+                                                             GroupName="1C3717ED-F297-4EE2-A42E-676F86016CA0"
+                                                             CountToOutputValues="5"
+                                                             DoAutocomplete="True"
+                                                             PredefinedValue="Unknown region"
+                                                             ParentItemsSource="{Binding ElementName=CountryComboboxP, Path=ChildItems}"
+                                                             ChildItemsSource="{Binding ElementName=CityComboboxP, Path=ParentItems}"
+                                                             SelectedKey="{Binding RegionID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                             KeyboardNavigation.TabNavigation="Local"
+                                                             TabIndex="1"/>
+
+                    <Label Grid.Row="2" Grid.Column="0" Content="Country"/>
+                    <Label Grid.Row="2" Grid.Column="1"
+                           Content="*" Foreground="Blue"
+                           Visibility="{Binding ElementName=CountryComboboxA, Path=IsValid, Converter={StaticResource InverseBoolToVisConverter}}" />
+                    <Label Grid.Row="2" Grid.Column="2"
+                           Content="*" Foreground="Red"
+                           Visibility="{Binding ElementName=CountryComboboxA, Path=IsValidInGroup, Converter={StaticResource InverseBoolToVisConverter}}" />
+                    <fuzzySearchComboBox:FuzzySearchCombobox Grid.Row="2" Grid.Column="3"
+                                                             Name="CountryComboboxP"
+                                                             GroupName="1C3717ED-F297-4EE2-A42E-676F86016CA0"
+                                                             DoAutocomplete="True"
+                                                             PredefinedValue="Unknown country"
+                                                             ParentItemsSource="{Binding AddressDictionary}"
+                                                             ChildItemsSource="{Binding ElementName=RegionComboboxP, Path=ParentItems}"
+                                                             SelectedKey="{Binding CountryID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                             KeyboardNavigation.TabNavigation="Local"
+                                                             TabIndex="2"/>
 
 
-            
+                </Grid>
+            </TabItem>
+
+
+
+
         </TabControl>
     </Grid>
 </UserControl>

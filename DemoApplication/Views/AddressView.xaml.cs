@@ -28,6 +28,8 @@ namespace DemoApplication.Views
             GridScopeA.DataContext = new AddressAutocompleteViewModel();
             GridScopeB.DataContext = new AddressViewModel();
 
+            GridScopeP.DataContext = new AddressAutocompleteViewModel();
+
             Loaded += (sender, args) => FocusManager.SetFocusedElement(GridScope, CountryCombobox); ;
         }
 
