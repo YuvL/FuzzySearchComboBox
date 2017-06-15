@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DemoApplication"
         xmlns:views="clr-namespace:DemoApplication.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="700">
+        Title="MainWindow" Height="350" Width="900">
     <Window.Resources>
         <DataTemplate x:Key="theAddress">
             <views:AddressView />

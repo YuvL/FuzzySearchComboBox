@@ -115,9 +115,9 @@ namespace Controls.FuzzySearchComboBox
                 }
 
                 var dependentComboboxes = GetDependentComboboxes(this);
-
+                //SelectedItem with PredefinedKey do not used in filters
                 var filterdBy = dependentComboboxes
-                    .Where(combobox => combobox.SelectedItem != null && combobox.SelectedItem.Value.Value != null)
+                    .Where(combobox => combobox.SelectedItem != null && combobox.SelectedItem.Value.Value != null && combobox.SelectedItem.Value.Key != PredefinedKey)
                     .Select(combobox => combobox.SelectedItem.Value.Value.ToString());
 
                 var filters = string.Join("; ", filterdBy);
@@ -314,21 +314,30 @@ namespace Controls.FuzzySearchComboBox
             }
         }
 
-        private static void ParentsAutoComplete(FuzzySearchCombobox combobox)
+        private static void TryParentsAutoComplete(FuzzySearchCombobox combobox)
         {
             var binding = combobox.GetBindingExpression(ParentItemsSourceProperty);
             var parentCombobox = binding.DataItem as FuzzySearchCombobox;
 
-            //Do not autocomplete if SelectedItem is not null
-            if (parentCombobox != null && parentCombobox.SelectedItem == null)
+            if (DoAutocompleteNeed(parentCombobox))
             {
-                var childItemsSource = parentCombobox.ChildItemsSource;
-                if (childItemsSource != null && childItemsSource.Count(x => !x.Value.IsDeleted) == 1)
+                var internalItemsSource = parentCombobox.InternalItemsSource;
+
+                if (internalItemsSource != null && internalItemsSource.Count(x => !x.Value.IsDeleted) == 1)
                 {
                     //Do autocomplete only using not deleted items
-                    parentCombobox.SetSelectedItem(childItemsSource.FirstOrDefault(x => !x.Value.IsDeleted));
+                    parentCombobox.SetSelectedItem(internalItemsSource.FirstOrDefault(x => !x.Value.IsDeleted));
                 }
             }
+        }
+
+        private static bool DoAutocompleteNeed(FuzzySearchCombobox combobox)
+        {
+            if (combobox == null)
+                return false;
+            //Do not autocomplete if SelectedItem is not null: perhaps this is item with isDeleted==true
+            //Do autocomplete if SelectedItem is IsPredefinedItem
+            return combobox.SelectedItem == null || IsPredefinedItem(combobox.SelectedItem);
         }
 
         private static void UpdateGroupValidation(FuzzySearchCombobox combobox)
@@ -368,6 +377,46 @@ namespace Controls.FuzzySearchComboBox
         }
 
         #endregion............................................................................................
+
+        #region Functionality associated with the presence in the data of a predefined element...
+
+        private const int PredefinedKey = -1;
+
+        private static bool IsPredefinedItem(KeyValuePair<int?, ValueContainer>? item)
+        {
+            return item != null && item.Value.Key == PredefinedKey;
+        }
+
+        public static readonly DependencyProperty PredefinedValueProperty =
+            DependencyProperty.Register("PredefinedValue", typeof(string), typeof(FuzzySearchCombobox),
+                new PropertyMetadata(default(string)));
+
+        /// <summary>
+        /// Predefined Value in DataSource of this control. This value will be added to DataSource, that is binding with this control.
+        /// </summary>
+        public string PredefinedValue
+        {
+            get { return (string)GetValue(PredefinedValueProperty); }
+            set { SetValue(PredefinedValueProperty, value); }
+        }
+
+        private void AddPredefinedValueToResult(List<ResultItem> result)
+        {
+            string predefinedValue = null;
+            Application.Current.Dispatcher.Invoke(new Action(() => { predefinedValue = PredefinedValue; }));
+
+            if (String.IsNullOrEmpty(predefinedValue))
+                return;
+            if (result.Any(x => x.Key == PredefinedKey))
+                return;
+
+            ValueContainer container = new ValueContainer(PredefinedKey, predefinedValue);
+            result.Insert(0, new ResultItem(new KeyValuePair<int?, ValueContainer>(PredefinedKey, container)));
+        }
+
+
+
+        #endregion.............................................................................................
 
         static FuzzySearchCombobox()
         {
@@ -499,10 +548,10 @@ namespace Controls.FuzzySearchComboBox
 
             if (item == null)
                 return;
-
-            if (fuzzySearchCombobox.DoAutocomplete)
+            //Try parents combobox autocomplete if DoAutocomplete and selected item is not predefined item
+            if (fuzzySearchCombobox.DoAutocomplete && !IsPredefinedItem(item))
             {
-                ParentsAutoComplete(fuzzySearchCombobox);
+                TryParentsAutoComplete(fuzzySearchCombobox);
                 UpdateGroupValidation(fuzzySearchCombobox);
             }
         }
@@ -599,8 +648,7 @@ namespace Controls.FuzzySearchComboBox
             var dependencyObject = (FuzzySearchCombobox)o;
 
             //отключим ComboBox если отсутствуют элементы для поиска -> отображения
-            var nothingToShow = dependencyObject.InternalItemsSource == null || dependencyObject.InternalItemsSource.All(x => x.Value.IsDeleted) ||
-                                dependencyObject.InternalItemsSource.All(x => dependencyObject.AlwaysShow != null && Equals(x.Value, dependencyObject.AlwaysShow.KeyValuePair.Value));
+            var nothingToShow = NothingToShow(dependencyObject);
             dependencyObject.NoData = nothingToShow;
             if (nothingToShow)
                 dependencyObject.InputTextBox.Text = string.Empty;
@@ -610,6 +658,17 @@ namespace Controls.FuzzySearchComboBox
             dependencyObject.SetSelectedItem(dependencyObject._setSelectedKeyRequest);
             dependencyObject._setSelectedKeyRequest = null;
             dependencyObject.UpdateFilters();
+        }
+
+        private static bool NothingToShow(FuzzySearchCombobox combobox)
+        {
+            if (!String.IsNullOrEmpty(combobox.PredefinedValue))
+                return false;
+
+            return combobox.InternalItemsSource == null ||
+                   combobox.InternalItemsSource.All(x => x.Value.IsDeleted) ||
+                   combobox.InternalItemsSource.All(
+                       x => combobox.AlwaysShow != null && Equals(x.Value, combobox.AlwaysShow.KeyValuePair.Value));
         }
 
         private static void TextPropertyChangedCallback(DependencyObject o, DependencyPropertyChangedEventArgs args)
@@ -879,6 +938,7 @@ namespace Controls.FuzzySearchComboBox
             char[] wordSplitters = null;
             var countToOutputValues = 0;
             var searchResult = new List<ResultItem>();
+            AddPredefinedValueToResult(searchResult);
 
             context.Send(state =>
             {
@@ -1118,7 +1178,8 @@ namespace Controls.FuzzySearchComboBox
         {
             if (key != null)
             {
-                if (InternalItemsSource != null)
+                //PredefinedKey is not contains in InternalItemsSource
+                if (InternalItemsSource != null && key != PredefinedKey)
                     SelectedItem = InternalItemsSource.FirstOrDefault(pair => pair.Key == key);
                 else
                     _setSelectedKeyRequest = key;
@@ -1142,8 +1203,12 @@ namespace Controls.FuzzySearchComboBox
                 SelectedKey = keyValuePair.Key;
                 SelectedValue = keyValuePair.Value;
 
-                ParentItems = GetParents(keyValuePair);
-                ChildItems = GetChilds(keyValuePair);
+                //If item is IsPredefinedItem - Do not need to filter the parent data and child data
+                if (!IsPredefinedItem(item))
+                {
+                    ParentItems = GetParents(keyValuePair);
+                    ChildItems = GetChilds(keyValuePair);
+                }
 
                 InputTextBox.Text = keyValuePair.Value.ToString();
                 InputTextBox.SelectionStart = InputTextBox.Text.Length;
@@ -1244,6 +1309,11 @@ namespace Controls.FuzzySearchComboBox
             public KeyValuePair<int?, ValueContainer> KeyValuePair;
 
             private ValueContainer ValueContainer { get { return KeyValuePair.Value; } }
+
+            public int? Key
+            {
+                get { return KeyValuePair.Key; }
+            }
         }
     }
 }
