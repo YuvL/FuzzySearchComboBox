@@ -314,12 +314,20 @@ namespace Controls.FuzzySearchComboBox
             }
         }
 
+        
         private static void TryParentsAutoComplete(FuzzySearchCombobox combobox)
         {
+            //if Autocomplete do not needed
+            if (!combobox.DoAutocomplete)
+                return;
+            //If a predefined item is selected
+            if (IsPredefinedItem(combobox.SelectedItem))
+                return;
+
             var binding = combobox.GetBindingExpression(ParentItemsSourceProperty);
             var parentCombobox = binding.DataItem as FuzzySearchCombobox;
 
-            if (DoAutocompleteNeed(parentCombobox))
+            if (IsParentalControlRequiresAutocomplete(parentCombobox))
             {
                 var internalItemsSource = parentCombobox.InternalItemsSource;
 
@@ -331,13 +339,10 @@ namespace Controls.FuzzySearchComboBox
             }
         }
 
-        private static bool DoAutocompleteNeed(FuzzySearchCombobox combobox)
+        private static bool IsParentalControlRequiresAutocomplete(FuzzySearchCombobox combobox)
         {
-            if (combobox == null)
-                return false;
             //Do not autocomplete if SelectedItem is not null: perhaps this is item with isDeleted==true
-            //Do autocomplete if SelectedItem is IsPredefinedItem
-            return combobox.SelectedItem == null || IsPredefinedItem(combobox.SelectedItem);
+            return combobox != null && combobox.SelectedItem == null;
         }
 
         private static void UpdateGroupValidation(FuzzySearchCombobox combobox)
@@ -539,6 +544,7 @@ namespace Controls.FuzzySearchComboBox
             ((FuzzySearchCombobox)o).SetSelectedItem(key);
         }
 
+       
         private static void SelectedItemChangedCallBack(DependencyObject o, DependencyPropertyChangedEventArgs args)
         {
             var item = args.NewValue as KeyValuePair<int?, ValueContainer>?;
@@ -548,12 +554,11 @@ namespace Controls.FuzzySearchComboBox
 
             if (item == null)
                 return;
-            //Try parents combobox autocomplete if DoAutocomplete and selected item is not predefined item
-            if (fuzzySearchCombobox.DoAutocomplete && !IsPredefinedItem(item))
-            {
-                TryParentsAutoComplete(fuzzySearchCombobox);
-                UpdateGroupValidation(fuzzySearchCombobox);
-            }
+            
+            //Try parents combobox autocomplete
+            TryParentsAutoComplete(fuzzySearchCombobox);
+            //Update Validation in Group
+            UpdateGroupValidation(fuzzySearchCombobox);
         }
 
 
@@ -1184,6 +1189,7 @@ namespace Controls.FuzzySearchComboBox
                 else
                     _setSelectedKeyRequest = key;
                 IsValid = GetValidValue(SelectedKey, InputTextBox.Text, SelectedValue);
+                UpdateGroupValidation(this);
                 return;
             }
 
