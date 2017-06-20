@@ -405,6 +405,15 @@ namespace Controls.FuzzySearchComboBox
             set { SetValue(PredefinedValueProperty, value); }
         }
 
+        private KeyValuePair<int?, ValueContainer>? PredefinedItem { get; set; }
+        private void InitPredefinedItem()
+        {
+            PredefinedItem = null;
+            if (String.IsNullOrEmpty(PredefinedValue))
+                return;
+            PredefinedItem = new KeyValuePair<int?, ValueContainer>(PredefinedKey, new ValueContainer(PredefinedKey, PredefinedValue));
+        }
+
         private void AddPredefinedValueToResult(List<ResultItem> result)
         {
             string predefinedValue = null;
@@ -447,6 +456,7 @@ namespace Controls.FuzzySearchComboBox
                     InputTextBox.Text = string.Empty;
                 SearchResult.Clear();
                 SearchResultCollection.Refresh();
+                InitPredefinedItem();
             };
 
             Loaded += OnFuzzySearchComboboxLoaded;
@@ -1184,8 +1194,8 @@ namespace Controls.FuzzySearchComboBox
             if (key != null)
             {
                 //PredefinedKey is not contains in InternalItemsSource
-                if (InternalItemsSource != null && key != PredefinedKey)
-                    SelectedItem = InternalItemsSource.FirstOrDefault(pair => pair.Key == key);
+                if (InternalItemsSource != null)
+                    SelectedItem = key != PredefinedKey ? InternalItemsSource.FirstOrDefault(pair => pair.Key == key) : PredefinedItem;
                 else
                     _setSelectedKeyRequest = key;
                 IsValid = GetValidValue(SelectedKey, InputTextBox.Text, SelectedValue);
