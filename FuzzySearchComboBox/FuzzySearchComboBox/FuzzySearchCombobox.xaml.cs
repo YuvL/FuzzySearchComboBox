@@ -881,7 +881,11 @@ namespace Controls.FuzzySearchComboBox
         private Dictionary<int?, ValueContainer> GetParents(KeyValuePair<int?, ValueContainer> currentItem)
         {
             var valueContainer = currentItem.Value;
-            return valueContainer == null ? null : valueContainer.Parents;
+            return valueContainer == null || valueContainer.Parents == null
+                ? null
+                : valueContainer.Parents
+                  .Where(x => !x.Value.IsDeleted)
+                  .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         private Dictionary<int?, ValueContainer> GetChilds(Dictionary<int?, ValueContainer> parentItemSource)
