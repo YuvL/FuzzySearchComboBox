@@ -314,32 +314,51 @@ namespace Controls.FuzzySearchComboBox
             }
         }
 
+
         
-        private static void TryParentsAutoComplete(FuzzySearchCombobox combobox)
+        private void TryAutoComplete()
         {
             //if Autocomplete do not needed
-            if (!combobox.DoAutocomplete)
+            if (!DoAutocomplete)
                 return;
-            //If a predefined item is selected
-            if (IsPredefinedItem(combobox.SelectedItem))
+            //If null or a predefined item is selected
+            if (SelectedItem == null || IsPredefinedItem(SelectedItem))
                 return;
 
-            var binding = combobox.GetBindingExpression(ParentItemsSourceProperty);
-            var parentCombobox = binding.DataItem as FuzzySearchCombobox;
+            //parent combobox
+            var bindingParent = GetBindingExpression(ParentItemsSourceProperty);
+            var parentCombobox = bindingParent?.DataItem as FuzzySearchCombobox;
 
-            if (IsParentalControlRequiresAutocomplete(parentCombobox))
+            if (IsControlRequiresAutocomplete(parentCombobox))
             {
                 var internalItemsSource = parentCombobox.InternalItemsSource;
 
                 if (internalItemsSource != null && internalItemsSource.Count(x => !x.Value.IsDeleted) == 1)
                 {
                     //Do autocomplete only using not deleted items
-                    parentCombobox.SetSelectedItem(internalItemsSource.FirstOrDefault(x => !x.Value.IsDeleted));
+                    var item = internalItemsSource.FirstOrDefault(x => !x.Value.IsDeleted);
+                    parentCombobox.SelectedItem = item;
+                }
+            }
+
+            //child combobox
+            var bindingChild = GetBindingExpression(ChildItemsSourceProperty);
+            var childCombobox = bindingChild?.DataItem as FuzzySearchCombobox;
+
+            if (IsControlRequiresAutocomplete(childCombobox))
+            {
+                var internalItemsSource = childCombobox.InternalItemsSource;
+
+                if (internalItemsSource != null && internalItemsSource.Count(x => !x.Value.IsDeleted) == 1)
+                {
+                    //Do autocomplete only using not deleted items
+                    var item = internalItemsSource.FirstOrDefault(x => !x.Value.IsDeleted);
+                    childCombobox.SelectedItem = item;
                 }
             }
         }
 
-        private static bool IsParentalControlRequiresAutocomplete(FuzzySearchCombobox combobox)
+        private static bool IsControlRequiresAutocomplete(FuzzySearchCombobox combobox)
         {
             //Do not autocomplete if SelectedItem is not null: perhaps this is item with isDeleted==true
             return combobox != null && combobox.SelectedItem == null;
@@ -381,6 +400,33 @@ namespace Controls.FuzzySearchComboBox
             }
         }
 
+        //A special method for a group: updates the associated selection lists and try autocomplete.
+        private void UpdateGroup(KeyValuePair<int?, ValueContainer>? item)
+        {
+            //parent combobox
+            var bindingParent = GetBindingExpression(ParentItemsSourceProperty);
+            var parentCombobox = bindingParent?.DataItem as FuzzySearchCombobox;
+
+            //child combobox
+            var bindingChild = GetBindingExpression(ChildItemsSourceProperty);
+            var childCombobox = bindingChild?.DataItem as FuzzySearchCombobox;
+
+            if (parentCombobox != null)
+            {
+                //top level, middle level
+                ParentItems = item != null ?
+                    GetParents(item.Value) : GetParents(ChildItemsSource);
+            }
+            if (childCombobox != null)
+            {
+                //middle levelб bottom level
+                ChildItems = item != null ?
+                    GetChilds(item.Value) : GetChilds(ParentItemsSource);
+            }
+
+            TryAutoComplete();
+        }
+
         #endregion............................................................................................
 
         #region Functionality associated with the presence in the data of a predefined element...
@@ -389,7 +435,7 @@ namespace Controls.FuzzySearchComboBox
 
         private static bool IsPredefinedItem(KeyValuePair<int?, ValueContainer>? item)
         {
-            return item != null && item.Value.Key == PredefinedKey;
+            return item == null ? false : item.Value.Key == PredefinedKey;
         }
 
         public static readonly DependencyProperty PredefinedValueProperty =
@@ -562,11 +608,6 @@ namespace Controls.FuzzySearchComboBox
             fuzzySearchCombobox.SetSelectedItem(item);
             Logger.DebugFormat(LoggingMessages.SelectedItemSettedTo, item != null && item.Value.Value != null ? item.Value.Value.ToString() : "null", fuzzySearchCombobox.NameForDebug);
 
-            if (item == null)
-                return;
-            
-            //Try parents combobox autocomplete
-            TryParentsAutoComplete(fuzzySearchCombobox);
             //Update Validation in Group
             UpdateGroupValidation(fuzzySearchCombobox);
         }
@@ -584,14 +625,6 @@ namespace Controls.FuzzySearchComboBox
 
             var parentItemSource = args.NewValue as Dictionary<int?, ValueContainer>;
 
-            //если элементы пришли как от родительского, так и от дочернего Combobox'a
-            if (dependencyObject.ChildItemsSource != null && parentItemSource != null)
-
-                //найдем общие элементы
-                dependencyObject.InternalItemsSource = parentItemSource.Where(pair => dependencyObject.ChildItemsSource.Any(valuePair => valuePair.Key == pair.Key)).ToDictionary(pair => pair.Key, pair => pair.Value);
-            else
-                dependencyObject.InternalItemsSource = parentItemSource;
-
             //если выбран какой-то элемент, то Combobox должен отдавать Child'ы выбранного элемента
             if (dependencyObject.SelectedItem != null)
             {
@@ -599,14 +632,12 @@ namespace Controls.FuzzySearchComboBox
                 if (pair.Value != null)
                     dependencyObject.ChildItems = dependencyObject.GetChilds(pair);
             }
-
             //иначе Child'ы элементов Combobox'a
             else
                 dependencyObject.ChildItems = dependencyObject.GetChilds(parentItemSource);
 
             //если элементы пришли как от родительского, так и от дочернего Combobox'a
             if (dependencyObject.ChildItemsSource != null && parentItemSource != null)
-
                 //найдем общие элементы 
                 dependencyObject.InternalItemsSource = parentItemSource.Where(pair => dependencyObject.ChildItemsSource.Any(valuePair => valuePair.Key == pair.Key)).ToDictionary(pair => pair.Key, pair => pair.Value);
             else
@@ -618,6 +649,10 @@ namespace Controls.FuzzySearchComboBox
         private static void ChildItemSourceChangedCallBack(DependencyObject o, DependencyPropertyChangedEventArgs args)
         {
             var dependencyObject = (FuzzySearchCombobox)o;
+            Logger.DebugFormat(LoggingMessages.ChildItemSourceChangedInCombobox, dependencyObject.NameForDebug);
+            //ItemsSource - наиболее приоритетный
+            if (dependencyObject.ItemsSource != null) return;
+
             var childItemSource = args.NewValue as Dictionary<int?, ValueContainer>;
 
             if (childItemSource == null)
@@ -628,14 +663,26 @@ namespace Controls.FuzzySearchComboBox
             }
             else
             {
+                //если выбран какой-то элемент, то Combobox должен отдавать Parent'ы выбранного элемента
+                if (dependencyObject.SelectedItem != null)
+                {
+                    var pair = dependencyObject.SelectedItem.GetValueOrDefault();
+                    if (pair.Value != null)
+                        dependencyObject.ParentItems = dependencyObject.GetParents(pair);
+                }
+                //иначе Parent'ы элементов Combobox'a
+                else
+                    dependencyObject.ParentItems = dependencyObject.GetParents(childItemSource);
+
                 //если элементы пришли как от родительского, так и от дочернего Combobox'a
-                dependencyObject.InternalItemsSource = dependencyObject.ParentItemsSource != null
-                    ? childItemSource.Where(
-                        pair => dependencyObject.ParentItemsSource.Any(valuePair => valuePair.Key == pair.Key))
-                        .ToDictionary(pair => pair.Key, pair => pair.Value)
-                    : childItemSource;
-                dependencyObject.ParentItems = dependencyObject.GetParents(childItemSource);
+                if (dependencyObject.ParentItems != null && childItemSource != null)
+
+                    //найдем общие элементы 
+                    dependencyObject.InternalItemsSource = childItemSource.Where(pair => dependencyObject.ParentItemsSource.Any(valuePair => valuePair.Key == pair.Key)).ToDictionary(pair => pair.Key, pair => pair.Value);
+                else
+                    dependencyObject.InternalItemsSource = childItemSource;
             }
+
 
             dependencyObject.UpdateFilters();
         }
@@ -907,7 +954,11 @@ namespace Controls.FuzzySearchComboBox
         private Dictionary<int?, ValueContainer> GetChilds(KeyValuePair<int?, ValueContainer> currentItem)
         {
             var valueContainer = currentItem.Value;
-            return valueContainer == null ? null : valueContainer.Childs;
+            return valueContainer == null || valueContainer.Childs == null
+                ? null
+                : valueContainer.Childs
+                  .Where(x => !x.Value.IsDeleted)
+                  .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         private void Search(bool showAllStrong = false)
@@ -1203,7 +1254,6 @@ namespace Controls.FuzzySearchComboBox
                 else
                     _setSelectedKeyRequest = key;
                 IsValid = GetValidValue(SelectedKey, InputTextBox.Text, SelectedValue);
-                UpdateGroupValidation(this);
                 return;
             }
 
@@ -1222,27 +1272,23 @@ namespace Controls.FuzzySearchComboBox
 
                 SelectedKey = keyValuePair.Key;
                 SelectedValue = keyValuePair.Value;
-
-                //If item is IsPredefinedItem - Do not need to filter the parent data and child data
-                if (!IsPredefinedItem(item))
-                {
-                    ParentItems = GetParents(keyValuePair);
-                    ChildItems = GetChilds(keyValuePair);
-                }
-
                 InputTextBox.Text = keyValuePair.Value.ToString();
                 InputTextBox.SelectionStart = InputTextBox.Text.Length;
                 if (!string.IsNullOrEmpty(InputTextBox.Text))
                     NoData = false;
-                return;
+            }
+            else
+            {
+                SelectedKey = null;
+                SelectedValue = null;
+                InputTextBox.Text = string.Empty;
             }
 
-            SelectedKey = null;
-            SelectedValue = null;
-            InputTextBox.Text = string.Empty;
-
-            ChildItems = GetChilds(ParentItemsSource);
-            ParentItems = null;
+            //If item is IsPredefinedItem - Do not need to filter the parent data and child data
+            if (!IsPredefinedItem(item))
+            {
+                UpdateGroup(item);
+            }
         }
 
         private void SetStayOpenPopup()
