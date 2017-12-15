@@ -10,6 +10,7 @@ namespace Controls.FuzzySearchComboBox
         public int? ID { get; private set; }
         public Dictionary<int?, ValueContainer> Childs { get; set; }
         public bool IsDeleted { get; private set; }
+        public bool IsDeletedRelationship { get; set; }
         public Dictionary<int?, ValueContainer> Parents { get; set; }
         public string Value { get; private set; }
         public ValueContainer() {}
@@ -19,6 +20,7 @@ namespace Controls.FuzzySearchComboBox
             ID = id;
             Value = strValue;
             IsDeleted = isDeleted;
+            IsDeletedRelationship = false;
         }
 
         protected bool Equals(ValueContainer other)
