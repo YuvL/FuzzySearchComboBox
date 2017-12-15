@@ -263,7 +263,7 @@ namespace Controls.FuzzySearchComboBox
 
         public static readonly DependencyProperty InternalItemsSourceProperty = DependencyProperty.Register("InternalItemsSource", typeof(Dictionary<int?, ValueContainer>), typeof(FuzzySearchCombobox),
             new PropertyMetadata(default(Dictionary<int?, ValueContainer>), InternalItemsSourceChangedCallBack));
-
+        
         public static readonly DependencyProperty CheckedProperty = DependencyProperty.Register("Checked", typeof(bool), typeof(FuzzySearchCombobox), new PropertyMetadata(default(bool)));
 
         public static readonly DependencyProperty ChildItemsProperty = DependencyProperty.Register("Childs", typeof(Dictionary<int?, ValueContainer>), typeof(FuzzySearchCombobox),
@@ -315,7 +315,6 @@ namespace Controls.FuzzySearchComboBox
         }
 
 
-        
         private void TryAutoComplete()
         {
             //if Autocomplete do not needed
@@ -331,8 +330,8 @@ namespace Controls.FuzzySearchComboBox
 
             if (IsControlRequiresAutocomplete(parentCombobox))
             {
-                var internalItemsSource = parentCombobox.InternalItemsSource;
-
+                var internalItemsSource = parentCombobox?.InternalItemsSource;
+                
                 if (internalItemsSource != null && internalItemsSource.Count(x => !x.Value.IsDeleted) == 1)
                 {
                     //Do autocomplete only using not deleted items
@@ -376,8 +375,9 @@ namespace Controls.FuzzySearchComboBox
                 var bindingChild = item.GetBindingExpression(ChildItemsSourceProperty);
                 var bindingParent = item.GetBindingExpression(ParentItemsSourceProperty);
 
-                var childCombobox = bindingChild != null ? bindingChild.DataItem as FuzzySearchCombobox : null;
-                var parentCombobox = bindingParent != null ? bindingParent.DataItem as FuzzySearchCombobox : null;
+                var childCombobox =  bindingChild?.DataItem as FuzzySearchCombobox;
+                var parentCombobox = bindingParent?.DataItem as FuzzySearchCombobox;
+
 
                 if (childCombobox == null && parentCombobox == null)
                     continue;
@@ -676,7 +676,6 @@ namespace Controls.FuzzySearchComboBox
 
                 //если элементы пришли как от родительского, так и от дочернего Combobox'a
                 if (dependencyObject.ParentItems != null && childItemSource != null)
-
                     //найдем общие элементы 
                     dependencyObject.InternalItemsSource = childItemSource.Where(pair => dependencyObject.ParentItemsSource.Any(valuePair => valuePair.Key == pair.Key)).ToDictionary(pair => pair.Key, pair => pair.Value);
                 else
@@ -931,10 +930,11 @@ namespace Controls.FuzzySearchComboBox
             return valueContainer == null || valueContainer.Parents == null
                 ? null
                 : valueContainer.Parents
-                  .Where(x => !x.Value.IsDeleted)
+                  .Where(x => !x.Value.IsDeleted && !x.Value.IsDeletedRelationship)
                   .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
+        
         private Dictionary<int?, ValueContainer> GetChilds(Dictionary<int?, ValueContainer> parentItemSource)
         {
             if (parentItemSource == null || !parentItemSource.Any())
@@ -957,7 +957,7 @@ namespace Controls.FuzzySearchComboBox
             return valueContainer == null || valueContainer.Childs == null
                 ? null
                 : valueContainer.Childs
-                  .Where(x => !x.Value.IsDeleted)
+                  .Where(x => !x.Value.IsDeleted && !x.Value.IsDeletedRelationship)
                   .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
@@ -1029,6 +1029,7 @@ namespace Controls.FuzzySearchComboBox
 
             var showAllItems = string.IsNullOrEmpty(searchSubstring) || string.IsNullOrWhiteSpace(searchSubstring) || isItemSelected;
             var deletedItems = searchSourceDeleted.OrderBy(pair => pair.Value.Value).Select(pair => new ResultItem(pair)).ToList();
+            
 
             if (showAllItems)
             {
