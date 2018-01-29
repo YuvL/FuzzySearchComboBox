@@ -339,22 +339,6 @@ namespace Controls.FuzzySearchComboBox
                     parentCombobox.SelectedItem = item;
                 }
             }
-
-            //child combobox
-            var bindingChild = GetBindingExpression(ChildItemsSourceProperty);
-            var childCombobox = bindingChild?.DataItem as FuzzySearchCombobox;
-
-            if (IsControlRequiresAutocomplete(childCombobox))
-            {
-                var internalItemsSource = childCombobox.InternalItemsSource;
-
-                if (internalItemsSource != null && internalItemsSource.Count(x => !x.Value.IsDeleted) == 1)
-                {
-                    //Do autocomplete only using not deleted items
-                    var item = internalItemsSource.FirstOrDefault(x => !x.Value.IsDeleted);
-                    childCombobox.SelectedItem = item;
-                }
-            }
         }
 
         private static bool IsControlRequiresAutocomplete(FuzzySearchCombobox combobox)
