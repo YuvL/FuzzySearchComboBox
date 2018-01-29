@@ -299,7 +299,9 @@ namespace Controls.FuzzySearchComboBox
 
         #region grop behavior............................................................................
 
-        public bool DoAutocomplete { get; set; }
+        public bool DoAutocompleteParent { get; set; }
+
+        public bool DoAutocompleteChild { get; set; }
 
         public static readonly DependencyProperty IsValidInGroupProperty = DependencyProperty.Register("IsValidInGroup", typeof(bool), typeof(FuzzySearchCombobox), new PropertyMetadata(true));
         public bool IsValidInGroup
@@ -317,13 +319,25 @@ namespace Controls.FuzzySearchComboBox
 
         private void TryAutoComplete()
         {
-            //if Autocomplete do not needed
-            if (!DoAutocomplete)
-                return;
             //If null or a predefined item is selected
             if (SelectedItem == null || IsPredefinedItem(SelectedItem))
                 return;
 
+            //AutoComplete at parent combobox
+            if (DoAutocompleteParent)
+            {
+                TryAutoCompleteAtParentComboBoxes();
+            }
+
+            //AutoComplete at child combobox
+            if (DoAutocompleteChild)
+            {
+                TryAutoCompleteAtChildComboBoxes();
+            }
+        }
+
+        private void TryAutoCompleteAtParentComboBoxes()
+        {
             //parent combobox
             var bindingParent = GetBindingExpression(ParentItemsSourceProperty);
             var parentCombobox = bindingParent?.DataItem as FuzzySearchCombobox;
@@ -331,7 +345,7 @@ namespace Controls.FuzzySearchComboBox
             if (IsControlRequiresAutocomplete(parentCombobox))
             {
                 var internalItemsSource = parentCombobox?.InternalItemsSource;
-                
+
                 if (internalItemsSource != null && internalItemsSource.Count(x => !x.Value.IsDeleted) == 1)
                 {
                     //Do autocomplete only using not deleted items
@@ -339,7 +353,10 @@ namespace Controls.FuzzySearchComboBox
                     parentCombobox.SelectedItem = item;
                 }
             }
+        }
 
+        private void TryAutoCompleteAtChildComboBoxes()
+        {
             //child combobox
             var bindingChild = GetBindingExpression(ChildItemsSourceProperty);
             var childCombobox = bindingChild?.DataItem as FuzzySearchCombobox;
@@ -365,7 +382,7 @@ namespace Controls.FuzzySearchComboBox
 
         private static void UpdateGroupValidation(FuzzySearchCombobox combobox)
         {
-            if (!combobox.DoAutocomplete)
+            if (!combobox.DoAutocompleteParent)
                 return;
 
             var dependentComboboxes = GetGroupComboboxes(combobox).ToList();
