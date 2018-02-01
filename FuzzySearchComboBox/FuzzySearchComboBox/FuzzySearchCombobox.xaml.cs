@@ -1015,6 +1015,7 @@ namespace Controls.FuzzySearchComboBox
             _searchTask.Start();
         }
 
+
         private List<ResultItem> SearchImpl(SynchronizationContext context, string searchSubstring, bool showAllStrong = false)
         {
             UpdateFilters();
@@ -1024,8 +1025,6 @@ namespace Controls.FuzzySearchComboBox
             var isItemSelected = false;
             char[] wordSplitters = null;
             var countToOutputValues = 0;
-            var searchResult = new List<ResultItem>();
-            AddPredefinedValueToResult(searchResult);
 
             context.Send(state =>
             {
@@ -1045,25 +1044,47 @@ namespace Controls.FuzzySearchComboBox
             if (searchSource == null) return null;
 
             var showAllItems = string.IsNullOrEmpty(searchSubstring) || string.IsNullOrWhiteSpace(searchSubstring) || isItemSelected;
+
+            return showAllItems
+                ? GetAllList(searchSource, searchSourceDeleted)
+                : GetFilteredList(searchSource, searchSourceDeleted, searchSubstring, wordSplitters,
+                    countToOutputValues, showAllStrong);
+        }
+
+
+        private List<ResultItem> GetAllList(List<KeyValuePair<int?, ValueContainer>> searchSource, List<KeyValuePair<int?, ValueContainer>> searchSourceDeleted)
+        {
             var deletedItems = searchSourceDeleted.OrderBy(pair => pair.Value.Value).Select(pair => new ResultItem(pair)).ToList();
-            
 
-            if (showAllItems)
+            var searchResult = new List<ResultItem>();
+            //Add Predefined Value if need
+            AddPredefinedValueToResult(searchResult);
+
+            var result = searchSource.OrderBy(pair => pair.Value.Value).Select(pair => new ResultItem(pair)).ToList();
+            if (!result.Any())
             {
-                var result = searchSource.OrderBy(pair => pair.Value.Value).Select(pair => new ResultItem(pair)).ToList();
-                if (!result.Any())
-                {
-                    TryAddAlwaysShowItemOrShowDeleted(searchResult, AlwaysShow, deletedItems);
-                    return searchResult;
-                }
-
-                searchResult.Add(_allItemsHeader); //заголовок-разграничитель 
-                searchResult.AddRange(result);
-
                 TryAddAlwaysShowItemOrShowDeleted(searchResult, AlwaysShow, deletedItems);
-
                 return searchResult;
             }
+
+            searchResult.Add(_allItemsHeader); //заголовок-разграничитель 
+            searchResult.AddRange(result);
+
+            TryAddAlwaysShowItemOrShowDeleted(searchResult, AlwaysShow, deletedItems);
+
+            return searchResult;
+        }
+
+
+
+        private List<ResultItem> GetFilteredList(List<KeyValuePair<int?, ValueContainer>> searchSource,
+            List<KeyValuePair<int?, ValueContainer>> searchSourceDeleted, String searchSubstring, char[] wordSplitters, int countToOutputValues, bool showAllStrong)
+        {
+            var deletedItems = searchSourceDeleted.OrderBy(pair => pair.Value.Value).Select(pair => new ResultItem(pair)).ToList();
+
+            var searchResult = new List<ResultItem>();
+            //Add Predefined Value if need
+            AddPredefinedValueToResult(searchResult);
 
             KeyValuePair<int?, ValueContainer>[] startsWithElements = { };
             KeyValuePair<int?, ValueContainer>[] containsElements = { };
@@ -1075,7 +1096,9 @@ namespace Controls.FuzzySearchComboBox
                 containsElements = searchSource.Where(x => ContainsSearch(x.Value.Value.ToLowerInvariant().Split(WordSplitters).Where(y => !string.IsNullOrEmpty(y)), searchWordsArray)).Except(startsWithElements).ToArray();
 
             //элементы, начинающиеся на поисковую подстроку. Предполагается, что такие элементы нужно показать первыми
-            KeyValuePair<int?, ValueContainer>[] strongSearchResult = startsWithElements;
+            KeyValuePair<int?, ValueContainer>[] strongSearchResult = startsWithElements.OrderBy(x => x.Value.Value).ToArray();
+
+
             if (strongSearchResult.Length < countToOutputValues)
                 strongSearchResult = strongSearchResult.Concat(containsElements).ToArray();
 
@@ -1097,13 +1120,14 @@ namespace Controls.FuzzySearchComboBox
             //элементы, удовлетворяющие условию нечеткого поиска 
             var fuzzySearchResult =
                 searchSource.Where(pair => FuzzySearch(pair.Value.Value, searchSubstring))
-                            .Select(pair => new { Pair = pair, LevenshteinDistance = CalcLevenshteinDistance(pair.Value.Value.ToLowerInvariant(), searchSubstring.ToLowerInvariant()) })
-                            .OrderBy(arg => arg.LevenshteinDistance)
-                            .Select(arg => arg.Pair)
-                            .Where(fsPair => strongSearchResult.All(ssPair => ssPair.Key != fsPair.Key))
-                            .Take(countToOutputValues)
-                            .Select(pair => new ResultItem(pair))
-                            .ToArray();
+                    .Select(pair => new { Pair = pair, LevenshteinDistance = CalcLevenshteinDistance(pair.Value.Value.ToLowerInvariant(), searchSubstring.ToLowerInvariant()) })
+                    .OrderBy(arg => arg.LevenshteinDistance)
+                    .Select(arg => arg.Pair)
+                    .Where(fsPair => strongSearchResult.All(ssPair => ssPair.Key != fsPair.Key))
+                    .Take(countToOutputValues)
+                    .Select(pair => new ResultItem(pair))
+                    .ToArray();
+
 
             if (fuzzySearchResult.Any())
             {
@@ -1138,8 +1162,8 @@ namespace Controls.FuzzySearchComboBox
                 if (strongSearchResultFromDeleted.Any())
                 {
                     deletedItems = strongSearchResultFromDeleted.Take(countToOutputValues)
-                            .Select(pair => new ResultItem(pair))
-                            .ToList();
+                        .Select(pair => new ResultItem(pair))
+                        .ToList();
                 }
                 else
                 {
@@ -1151,6 +1175,7 @@ namespace Controls.FuzzySearchComboBox
 
             return searchResult;
         }
+
 
         private void TryAddAlwaysShowItemOrShowDeleted(List<ResultItem> searchResult, ResultItem alwaysShowItem, List<ResultItem> deletedItems)
         {
