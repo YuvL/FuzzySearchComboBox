@@ -1155,7 +1155,7 @@ namespace Controls.FuzzySearchComboBox
                         .Where(x => ContainsSearch(x.Value.Value.ToLowerInvariant().Split(WordSplitters).Where(y => !string.IsNullOrEmpty(y)), searchWordsArrayFromDeleted))
                         .Except(startsWithElementsFromDeleted).ToArray();
 
-                var strongSearchResultFromDeleted = startsWithElementsFromDeleted;
+                var strongSearchResultFromDeleted = startsWithElementsFromDeleted.OrderBy(x => x.Value.Value).ToArray();
                 if (strongSearchResultFromDeleted.Length < countToOutputValues)
                     strongSearchResultFromDeleted = strongSearchResultFromDeleted.Concat(containsElementsFromDeleted).ToArray();
 
