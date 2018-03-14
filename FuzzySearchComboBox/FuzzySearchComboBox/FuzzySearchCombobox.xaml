@@ -193,7 +193,7 @@
                             <StackPanel>
                                 <fc:FiltersNotification x:Name="FiltersNotification" Text="{Binding RelativeSource={RelativeSource AncestorType=fc:FuzzySearchCombobox}, Path=Filters}"
                                                         FilteredByLabel="{Binding RelativeSource={RelativeSource AncestorType= fc:FuzzySearchCombobox}, Path=FilteredByLabel}"/>
-                                <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False" Height="{TemplateBinding ActualHeight}" MaxHeight="245">
+                                <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False" Height="{TemplateBinding ActualHeight}" MaxHeight="245" PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel">
                                     <VirtualizingStackPanel IsItemsHost="True" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                                 </ScrollViewer>
                             </StackPanel>
