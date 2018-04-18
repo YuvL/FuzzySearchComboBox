@@ -823,8 +823,14 @@ namespace Controls.FuzzySearchComboBox
         //убирает выделение первого элемента
         private void SearchResultPanel_OnLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            SearchResultCollection.MoveCurrentToFirst();
-            SearchResultCollection.MoveCurrentToPrevious();
+            var lb = sender as ListBox;
+            if (lb == null)
+                return;
+            if (!lb.IsKeyboardFocusWithin)
+            {
+                SearchResultCollection.MoveCurrentToFirst();
+                SearchResultCollection.MoveCurrentToPrevious();
+            }
         }
 
         //выделяет элемент под мышью
