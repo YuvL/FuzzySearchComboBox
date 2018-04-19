@@ -30,7 +30,9 @@ namespace DemoApplication.Views
 
             GridScopeP.DataContext = new AddressAutocompleteViewModel();
 
-            Loaded += (sender, args) => FocusManager.SetFocusedElement(GridScope, CountryCombobox); ;
+            GridScopeRealAddressData.DataContext = new RealAddressViewModel();
+
+            Loaded += (sender, args) => FocusManager.SetFocusedElement(GridScopeDataView, StreetComboboxReal); 
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)

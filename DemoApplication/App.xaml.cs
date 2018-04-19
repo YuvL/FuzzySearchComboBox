@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using DemoApplication.DemoData;
 
 namespace DemoApplication
 {
@@ -16,8 +18,21 @@ namespace DemoApplication
         private void OnApplicationStartup(object sender, StartupEventArgs e)
         {
             PresettingApplication(e.Args);
-            Application.Current.MainWindow = new MainWindow();
-            Application.Current.MainWindow.Show();
+            var backgroundThread = new BackgroundWorker();
+            backgroundThread.DoWork += (o, args) =>
+            {
+                if (!DictionariesInstance.InitUsingCache())
+                {
+                    MessageBox.Show("Error load sample data from local file!", "Error", MessageBoxButton.OK);
+                    Environment.Exit(1);
+                }
+            };
+            backgroundThread.RunWorkerCompleted += (o, args) =>
+            {
+                Application.Current.MainWindow = new MainWindow();
+                Application.Current.MainWindow.Show();
+            };
+            backgroundThread.RunWorkerAsync();
         }
 
         /// <summary>

@@ -376,7 +376,7 @@
                                                                      CountToOutputValues="15"
                                                                      DoAutocompleteParent="True"
                                                                      PredefinedValue="Unknown city"
-                                                                     ParentItemsSource="{Binding ElementName=RegionComboboxP, Path=ChildItems}"
+                                                                     ParentItemsSource="{Binding ElementName=DistrictComboboxReal, Path=ChildItems}"
                                                                      SelectedKey="{Binding CityID, ValidatesOnDataErrors=True, Mode=TwoWay}"
                                                                      KeyboardNavigation.TabNavigation="Local"
                                                                      TabIndex="0"/>
@@ -394,8 +394,8 @@
                                                                      CountToOutputValues="5"
                                                                      DoAutocompleteParent="True"
                                                                      PredefinedValue="Unknown region"
-                                                                     ParentItemsSource="{Binding ElementName=CountryComboboxP, Path=ChildItems}"
-                                                                     ChildItemsSource="{Binding ElementName=CityComboboxP, Path=ParentItems}"
+                                                                     ParentItemsSource="{Binding ElementName=CityComboboxReal, Path=ChildItems}"
+                                                                     ChildItemsSource="{Binding ElementName=StreetComboboxReal, Path=ParentItems}"
                                                                      SelectedKey="{Binding RegionID, ValidatesOnDataErrors=True, Mode=TwoWay}"
                                                                      KeyboardNavigation.TabNavigation="Local"
                                                                      TabIndex="1"/>
@@ -413,7 +413,7 @@
                                                                      DoAutocompleteParent="True"
                                                                      PredefinedValue="Unknown country"
                                                                      ParentItemsSource="{Binding AddressDictionary}"
-                                                                     ChildItemsSource="{Binding ElementName=RegionComboboxP, Path=ParentItems}"
+                                                                     ChildItemsSource="{Binding ElementName=DistrictComboboxReal, Path=ParentItems}"
                                                                      SelectedKey="{Binding CountryID, ValidatesOnDataErrors=True, Mode=TwoWay}"
                                                                      KeyboardNavigation.TabNavigation="Local"
                                                                      TabIndex="2"/>
