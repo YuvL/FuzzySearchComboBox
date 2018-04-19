@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -159,6 +160,22 @@ namespace Controls.FuzzySearchComboBox
             }
         }
 
+        public GroupRelationships.GroupRelationships GroupRelationships
+        {
+            get { return (GroupRelationships.GroupRelationships)GetValue(GroupRelationshipsProperty); }
+            set
+            {
+                SetValue(GroupRelationshipsProperty, value);
+                OnPropertyChanged("GroupRelationships");
+            }
+        }
+
+        public bool IsStreetLevel { get; set; }
+        
+        public bool IsDistrictLevel { get; set; }
+        
+        public bool IsCityLevel { get; set; }
+        
         public int MaxDropDownListHeight
         {
             get { return (int)GetValue(MaxDropDownListHeightProperty); }
@@ -255,6 +272,9 @@ namespace Controls.FuzzySearchComboBox
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(Dictionary<int, string>), typeof(FuzzySearchCombobox),
             new PropertyMetadata(default(Dictionary<int, string>), ItemsSourcePropertyChangedCallback));
 
+        public static readonly DependencyProperty GroupRelationshipsProperty = DependencyProperty.Register("GroupRelationships", typeof(GroupRelationships.GroupRelationships), typeof(FuzzySearchCombobox),
+            new PropertyMetadata(default(GroupRelationships.GroupRelationships), GroupRelationshipsPropertyCallBack));
+
         public static readonly DependencyProperty ParentItemsSourceProperty = DependencyProperty.Register("ParentItemsSource", typeof(Dictionary<int?, ValueContainer>), typeof(FuzzySearchCombobox),
             new PropertyMetadata(default(Dictionary<int?, ValueContainer>), ParentItemSourceChangedCallBack));
 
@@ -299,6 +319,63 @@ namespace Controls.FuzzySearchComboBox
 
         #region grop behavior............................................................................
 
+        /// <summary>
+        /// Gets or sets a dictionary that supports caching for GroupRelationships of each group
+        /// </summary>
+        public static Dictionary<string, GroupRelationships.GroupRelationships> GroupDescriptorCache { get; set; }
+
+        public static void UpdateGroupDescriptorCache(FuzzySearchCombobox target)
+        {
+            GroupRelationships.GroupRelationships relationships = null;
+            Application.Current.Dispatcher.Invoke(new Action(() => { relationships = target.GroupRelationships; }));
+            if (string.IsNullOrEmpty(target.GroupName) || GroupDescriptorCache.ContainsKey(target.GroupName))
+            {
+                return;
+            }
+
+            if (relationships != null)
+            {
+                GroupDescriptorCache.Add(target.GroupName, target.GroupRelationships.Clone());
+            }
+        }
+
+        public int? CurrentCityId
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(GroupName) || !GroupDescriptorCache.ContainsKey(GroupName))
+                {
+                    return null;
+                }
+                return GroupDescriptorCache[GroupName].CurrentCityId;
+            }
+        }
+
+        public int? CurrentDistrictId
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(GroupName) || !GroupDescriptorCache.ContainsKey(GroupName))
+                {
+                    return null;
+                }
+                return GroupDescriptorCache[GroupName].CurrentDistrictId;
+            }
+        }
+
+        public int? CurrentStreetId
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(GroupName) || !GroupDescriptorCache.ContainsKey(GroupName))
+                {
+                    return null;
+                }
+                return GroupDescriptorCache[GroupName].CurrentStreetId;
+            }
+        }
+
+        
         public bool DoAutocompleteParent { get; set; }
 
         public bool DoAutocompleteChild { get; set; }
@@ -420,27 +497,26 @@ namespace Controls.FuzzySearchComboBox
         //A special method for a group: updates the associated selection lists and try autocomplete.
         private void UpdateGroup(KeyValuePair<int?, ValueContainer>? item)
         {
-            //parent combobox
-            var bindingParent = GetBindingExpression(ParentItemsSourceProperty);
-            var parentCombobox = bindingParent?.DataItem as FuzzySearchCombobox;
-
-            //child combobox
-            var bindingChild = GetBindingExpression(ChildItemsSourceProperty);
-            var childCombobox = bindingChild?.DataItem as FuzzySearchCombobox;
-
-            if (parentCombobox != null)
+            if (IsCityLevel)
             {
-                //top level, middle level
-                ParentItems = item != null ?
-                    GetParents(item.Value) : GetParents(ChildItemsSource);
-            }
-            if (childCombobox != null)
-            {
-                //middle levelб bottom level
+                //bottom level
                 ChildItems = item != null ?
                     GetChilds(item.Value) : GetChilds(ParentItemsSource);
             }
-
+            if (IsDistrictLevel)
+            {
+                //middle level
+                ChildItems = item != null ?
+                    GetChilds(item.Value) : GetChilds(ParentItemsSource);
+                ParentItems = item != null ?
+                    GetParents(item.Value) : GetParents(ChildItemsSource);
+            }
+            if (IsStreetLevel)
+            {
+                //top level
+                ParentItems = item != null ?
+                    GetParents(item.Value) : GetParents(ChildItemsSource);
+            }
             TryAutoComplete();
         }
 
@@ -499,6 +575,7 @@ namespace Controls.FuzzySearchComboBox
         {
             EventManager.RegisterClassHandler(typeof(FuzzySearchCombobox), Mouse.MouseWheelEvent, new MouseWheelEventHandler(OnMouseWheel), true);
             Comboboxes = new WeakReferenceCollection();
+            GroupDescriptorCache = new Dictionary<string, GroupRelationships.GroupRelationships>();
         }
 
         public FuzzySearchCombobox()
@@ -526,7 +603,6 @@ namespace Controls.FuzzySearchComboBox
             BounceProtectionDelay = DefaultBounceProtectionDelay;
             _fuzzySearchComboboxCreatedAt = DateTime.Now.ToString("HH:mm:ss.fff");
             Logger.DebugFormat(LoggingMessages.FuzzySearchComboBoxCreatedFormat, NameForDebug);
-
         }
 
         protected virtual void OnPropertyChanged(string propertyName = null)
@@ -622,14 +698,46 @@ namespace Controls.FuzzySearchComboBox
         {
             var item = args.NewValue as KeyValuePair<int?, ValueContainer>?;
             var fuzzySearchCombobox = ((FuzzySearchCombobox)o);
+
+            if (!String.IsNullOrEmpty(fuzzySearchCombobox.GroupName))
+            {
+                //Update CurrentCityId, CurrentDistrictId, CurrentStreetId in group
+                UpdateSDCInGroup(fuzzySearchCombobox, item?.Value);
+            }
+            
             fuzzySearchCombobox.SetSelectedItem(item);
             Logger.DebugFormat(LoggingMessages.SelectedItemSettedTo, item != null && item.Value.Value != null ? item.Value.Value.ToString() : "null", fuzzySearchCombobox.NameForDebug);
 
-            //Update Validation in Group
-            UpdateGroupValidation(fuzzySearchCombobox);
+            if (!String.IsNullOrEmpty(fuzzySearchCombobox.GroupName))
+            {
+                //Update Validation in Group
+                UpdateGroupValidation(fuzzySearchCombobox);
+            }
         }
 
 
+        private static void UpdateSDCInGroup(FuzzySearchCombobox combobox, ValueContainer item)
+        {
+            if (!GroupDescriptorCache.Any() ||!GroupDescriptorCache.ContainsKey(combobox.GroupName))
+            {
+                return;
+            }
+
+            var groupRelationships = GroupDescriptorCache[combobox.GroupName];
+
+            if (combobox.IsStreetLevel)
+            {
+                groupRelationships.SetStreet(item?.ID);
+            }
+            if (combobox.IsDistrictLevel)
+            {
+                groupRelationships.SetDistrict(item?.ID);
+            }
+            if (combobox.IsCityLevel)
+            {
+                groupRelationships.SetCity(item?.ID);
+            }
+        }
 
         private static void ParentItemSourceChangedCallBack(DependencyObject o, DependencyPropertyChangedEventArgs args)
         {
@@ -719,6 +827,17 @@ namespace Controls.FuzzySearchComboBox
             var itemSource = items.ToDictionary<KeyValuePair<int, string>, int?, ValueContainer>(item => item.Key, item => new ValueContainer(item.Key, item.Value));
 
             dependencyObject.InternalItemsSource = itemSource;
+        }
+
+        private static void GroupRelationshipsPropertyCallBack(DependencyObject o, DependencyPropertyChangedEventArgs args)
+        {
+            var dependencyObject = (FuzzySearchCombobox)o;
+
+            //проверка типа
+            var relationships = args.NewValue as GroupRelationships.GroupRelationships;
+
+            if (relationships != null)
+                UpdateGroupDescriptorCache(dependencyObject);
         }
 
         private static void InternalItemsSourceChangedCallBack(DependencyObject o, DependencyPropertyChangedEventArgs args)
@@ -947,17 +1066,59 @@ namespace Controls.FuzzySearchComboBox
             return parents;
         }
 
+        //private Dictionary<int?, ValueContainer> GetParents(KeyValuePair<int?, ValueContainer> currentItem)
+        //{
+        //    var valueContainer = currentItem.Value;
+        //    return valueContainer == null || valueContainer.Parents == null
+        //        ? null
+        //        : valueContainer.Parents
+        //          .Where(x => !x.Value.IsDeleted && !x.Value.IsDeletedRelationship)
+        //          .ToDictionary(pair => pair.Key, pair => pair.Value);
+        //}
+
         private Dictionary<int?, ValueContainer> GetParents(KeyValuePair<int?, ValueContainer> currentItem)
         {
-            var valueContainer = currentItem.Value;
-            return valueContainer == null || valueContainer.Parents == null
-                ? null
-                : valueContainer.Parents
-                  .Where(x => !x.Value.IsDeleted && !x.Value.IsDeletedRelationship)
-                  .ToDictionary(pair => pair.Key, pair => pair.Value);
+            var resultOld = currentItem.Value.Parents?.Where(x => !x.Value.IsDeleted).OrderBy(x => x.Value.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+            //this is District(middle) level
+            if (IsDistrictLevel)
+            {
+                //current item District has valid links with cities:
+                List<int> validCities;
+                if (CurrentStreetId == null)
+                {
+                    validCities = GroupDescriptorCache[GroupName].DC.Where(x => x.DistrictId == currentItem.Value.ID && !x.IsDeleted).Select(x => x.CityId).ToList();
+                }
+                else
+                {
+                    validCities = GroupDescriptorCache[GroupName].SDC.Where(x => x.DistrictId == currentItem.Value.ID && !x.IsDeleted && x.StreetId == CurrentStreetId).Select(x => x.CityId).ToList();
+                }
+
+                //take from Parents only those elements that are present in the not removed bundles
+                //todo Parents?.Where(x => !x.Value.IsDeleted)
+                var resultCities = currentItem.Value?.Parents?.Where(x => validCities.Contains((int)x.Value.ID))?.OrderBy(x => x.Value.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+                return resultCities;
+
+            }
+
+            //this is Street(top) level
+            //current item Street has valid links with districts:
+            List<int> validDistricts;
+            if (CurrentCityId == null)
+            {
+                validDistricts = GroupDescriptorCache[GroupName].SDC.Where(x => x.StreetId == currentItem.Value.ID && !x.IsDeleted).Select(x => x.DistrictId).ToList();
+            }
+            else
+            {
+                validDistricts = GroupDescriptorCache[GroupName].SDC.Where(x => x.StreetId == currentItem.Value.ID && !x.IsDeleted && x.CityId == CurrentCityId).Select(x => x.DistrictId).ToList();
+            }
+
+            //take from Parents only those elements that are present in the not removed bundles
+            //todo Parents?.Where(x => !x.Value.IsDeleted)
+            var resultDistrits = currentItem.Value?.Parents?.Where(x => validDistricts.Contains((int)x.Value.ID))?.OrderBy(x => x.Value.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+            return resultDistrits;
         }
 
-        
+
         private Dictionary<int?, ValueContainer> GetChilds(Dictionary<int?, ValueContainer> parentItemSource)
         {
             if (parentItemSource == null || !parentItemSource.Any())
@@ -971,17 +1132,59 @@ namespace Controls.FuzzySearchComboBox
             foreach (var child in keyValuePairs)
                 childs.Add(child.Key, child.Value);
 
-            return childs;
+            return childs; //.OrderBy(x => x.Value.Value); todo
         }
+
+        //private Dictionary<int?, ValueContainer> GetChilds(KeyValuePair<int?, ValueContainer> currentItem)
+        //{
+        //    var valueContainer = currentItem.Value;
+        //    return valueContainer == null || valueContainer.Childs == null
+        //        ? null
+        //        : valueContainer.Childs
+        //          .Where(x => !x.Value.IsDeleted && !x.Value.IsDeletedRelationship)
+        //          .ToDictionary(pair => pair.Key, pair => pair.Value);
+        //}
 
         private Dictionary<int?, ValueContainer> GetChilds(KeyValuePair<int?, ValueContainer> currentItem)
         {
-            var valueContainer = currentItem.Value;
-            return valueContainer == null || valueContainer.Childs == null
-                ? null
-                : valueContainer.Childs
-                  .Where(x => !x.Value.IsDeleted && !x.Value.IsDeletedRelationship)
-                  .ToDictionary(pair => pair.Key, pair => pair.Value);
+            var resultOld = currentItem.Value?.Childs?.Where(x => !x.Value.IsDeleted).OrderBy(x => x.Value.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+            //this is District(middle) level
+            if (IsDistrictLevel)
+            {
+                //current item District has valid links with childs streets:
+                List<int> validStreets;
+                if (CurrentCityId == null)
+                {
+                    validStreets = GroupDescriptorCache[GroupName].SDC.Where(x => x.DistrictId == currentItem.Value.ID && !x.IsDeleted).Select(x => x.StreetId).ToList();
+                }
+                else
+                {
+                    validStreets = GroupDescriptorCache[GroupName].SDC.Where(x => x.DistrictId == currentItem.Value.ID && !x.IsDeleted && x.CityId == CurrentCityId).Select(x => x.StreetId).ToList();
+                }
+
+                //take from Childs only those elements that are present in the not removed bundles
+                //todo Childs?.Where(x => !x.Value.IsDeleted)
+                var resultStreets = currentItem.Value?.Childs?.Where(x => validStreets.Contains((int)x.Value.ID))?.OrderBy(x => x.Value.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+                return resultStreets;
+            }
+
+            //this is City(bottom) level
+            //current item City has valid links with childs districts:
+            List<int> validDistricts;
+            if (CurrentStreetId == null)
+            {
+                validDistricts = GroupDescriptorCache[GroupName].DC.Where(x => x.CityId == currentItem.Value.ID && !x.IsDeleted).Select(x => x.DistrictId).ToList();
+            }
+            else
+            {
+                validDistricts = GroupDescriptorCache[GroupName].SDC.Where(x => x.CityId == currentItem.Value.ID && !x.IsDeleted && x.StreetId == CurrentStreetId).Select(x => x.DistrictId).ToList();
+            }
+
+            //take from Childs only those elements that are present in the not removed bundles
+            //todo Childs?.Where(x => !x.Value.IsDeleted)
+            var resultDistrits = currentItem.Value?.Childs?.Where(x => validDistricts.Contains((int)x.Value.ID))?.OrderBy(x => x.Value.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+
+            return resultDistrits;
         }
 
         private void Search(bool showAllStrong = false)

@@ -32,7 +32,7 @@ namespace DemoApplication.Views
 
             GridScopeRealAddressData.DataContext = new RealAddressViewModel();
 
-            Loaded += (sender, args) => FocusManager.SetFocusedElement(GridScopeDataView, StreetComboboxReal); 
+            Loaded += (sender, args) => FocusManager.SetFocusedElement(GridScopeRealAddressData, StreetComboboxReal); 
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
