@@ -337,12 +337,15 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Label Grid.Row="0" Grid.Column="0" Content="StreetID"/>
-                            <TextBox Grid.Row="0" Grid.Column="1"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding StorageStreetID}"/>
+                            
                             <Label Grid.Row="1" Grid.Column="0" Content="DistrictID"/>
-                            <TextBox Grid.Row="1" Grid.Column="1"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding StorageDistrictID}"/>
+                            
                             <Label Grid.Row="2" Grid.Column="0" Content="CityID"/>
-                            <TextBox Grid.Row="2" Grid.Column="1"/>
-                            <Button Grid.Row="3" Grid.Column="1" Content="Show in View"></Button>
+                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding StorageCityID}"/>
+                            
+                            <Button Grid.Row="3" Grid.Column="1" Content="Show in View" Command="{Binding ShowCommand}"/>
                         </Grid>
                         
                     </GroupBox>
@@ -379,7 +382,7 @@
                                                                      IsStreetLevel =" true"
                                                                      GroupRelationships = "{Binding GroupRelationships}"
                                                                      ParentItemsSource="{Binding ElementName=DistrictComboboxReal, Path=ChildItems}"
-                                                                     SelectedKey="{Binding CityID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                                     SelectedKey="{Binding StreetID, ValidatesOnDataErrors=True, Mode=TwoWay}"
                                                                      KeyboardNavigation.TabNavigation="Local"
                                                                      TabIndex="0"/>
 
@@ -400,7 +403,7 @@
                                                                      GroupRelationships = "{Binding GroupRelationships}"
                                                                      ParentItemsSource="{Binding ElementName=CityComboboxReal, Path=ChildItems}"
                                                                      ChildItemsSource="{Binding ElementName=StreetComboboxReal, Path=ParentItems}"
-                                                                     SelectedKey="{Binding RegionID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                                     SelectedKey="{Binding DistrictID, ValidatesOnDataErrors=True, Mode=TwoWay}"
                                                                      KeyboardNavigation.TabNavigation="Local"
                                                                      TabIndex="1"/>
 
@@ -420,12 +423,12 @@
                                                                      GroupRelationships = "{Binding GroupRelationships}"
                                                                      ParentItemsSource="{Binding AddressDictionary}"
                                                                      ChildItemsSource="{Binding ElementName=DistrictComboboxReal, Path=ParentItems}"
-                                                                     SelectedKey="{Binding CountryID, ValidatesOnDataErrors=True, Mode=TwoWay}"
+                                                                     SelectedKey="{Binding CityID, ValidatesOnDataErrors=True, Mode=TwoWay}"
                                                                      KeyboardNavigation.TabNavigation="Local"
                                                                      TabIndex="2"/>
                             <StackPanel Orientation="Horizontal"  Grid.Row="3" Grid.ColumnSpan="4">
-                                <Button Content="Save to repository"/>
-                                <Button Content="Clear"/>
+                                <Button Content="Save to repository" Command="{Binding SaveCommand}"/>
+                                <Button Content="Clear" Command="{Binding ClearCommand}"/>
                             </StackPanel>
                             
                         </Grid>
