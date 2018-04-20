@@ -419,18 +419,30 @@ namespace Controls.FuzzySearchComboBox
             var bindingParent = GetBindingExpression(ParentItemsSourceProperty);
             var parentCombobox = bindingParent?.DataItem as FuzzySearchCombobox;
 
-            if (IsControlRequiresAutocomplete(parentCombobox))
-            {
-                var internalItemsSource = parentCombobox?.InternalItemsSource;
+            var internalItemsSource = parentCombobox?.InternalItemsSource;
 
-                if (internalItemsSource != null && internalItemsSource.Count(x => !x.Value.IsDeleted) == 1)
+            if (internalItemsSource != null && internalItemsSource.Count(x => !x.Value.IsDeleted) == 1)
+            {
+                //Do autocomplete only using not deleted items
+                var item = internalItemsSource.FirstOrDefault(x => !x.Value.IsDeleted);
+                parentCombobox.SelectedItem = item;
+            }
+
+            //from the Street level there is one more parent level
+            if (IsStreetLevel)
+            {
+                var bindingParentNext = parentCombobox?.GetBindingExpression(ParentItemsSourceProperty);
+                var parentComboboxNext = bindingParentNext?.DataItem as FuzzySearchCombobox;
+                var internalItemsSourceNext = parentComboboxNext?.InternalItemsSource;
+                if (internalItemsSourceNext != null && internalItemsSourceNext.Count(x => !x.Value.IsDeleted) == 1)
                 {
                     //Do autocomplete only using not deleted items
-                    var item = internalItemsSource.FirstOrDefault(x => !x.Value.IsDeleted);
-                    parentCombobox.SelectedItem = item;
+                    var item = internalItemsSourceNext.FirstOrDefault(x => !x.Value.IsDeleted);
+                    parentComboboxNext.SelectedItem = item;
                 }
             }
         }
+
 
         private void TryAutoCompleteAtChildComboBoxes()
         {
@@ -438,23 +450,29 @@ namespace Controls.FuzzySearchComboBox
             var bindingChild = GetBindingExpression(ChildItemsSourceProperty);
             var childCombobox = bindingChild?.DataItem as FuzzySearchCombobox;
 
-            if (IsControlRequiresAutocomplete(childCombobox))
-            {
-                var internalItemsSource = childCombobox.InternalItemsSource;
+            var internalItemsSource = childCombobox?.InternalItemsSource;
 
-                if (internalItemsSource != null && internalItemsSource.Count(x => !x.Value.IsDeleted) == 1)
+            if (internalItemsSource != null && internalItemsSource.Count(x => !x.Value.IsDeleted) == 1)
+            {
+                //Do autocomplete only using not deleted items
+                var item = internalItemsSource.FirstOrDefault(x => !x.Value.IsDeleted);
+                childCombobox.SelectedItem = item;
+            }
+
+            //from the City level there is one more child level
+            if (IsCityLevel)
+            {
+                var bindingChildNext = childCombobox?.GetBindingExpression(ChildItemsSourceProperty);
+                var childComboboxNext = bindingChildNext?.DataItem as FuzzySearchCombobox;
+                var internalItemsSourceNext = childComboboxNext?.InternalItemsSource;
+
+                if (internalItemsSourceNext != null && internalItemsSourceNext.Count(x => !x.Value.IsDeleted) == 1)
                 {
                     //Do autocomplete only using not deleted items
-                    var item = internalItemsSource.FirstOrDefault(x => !x.Value.IsDeleted);
-                    childCombobox.SelectedItem = item;
+                    var item = internalItemsSourceNext.FirstOrDefault(x => !x.Value.IsDeleted);
+                    childComboboxNext.SelectedItem = item;
                 }
             }
-        }
-
-        private static bool IsControlRequiresAutocomplete(FuzzySearchCombobox combobox)
-        {
-            //Do not autocomplete if SelectedItem is not null: perhaps this is item with isDeleted==true
-            return combobox != null && combobox.SelectedItem == null;
         }
 
         private static void UpdateGroupValidation(FuzzySearchCombobox combobox)
