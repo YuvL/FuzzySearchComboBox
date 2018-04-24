@@ -40,6 +40,9 @@
       <HintPath>..\packages\CommandLineParser.1.9.71\lib\net40\CommandLine.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Practices.Prism">
+      <HintPath>.\Microsoft.Practices.Prism.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -54,17 +57,32 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Xstream.Core, Version=3.0.6600.23163, Culture=neutral, PublicKeyToken=55617f49a18b7e0b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Xstream.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DemoData\BasicDictionaries.cs" />
+    <Compile Include="DemoData\DCRecord.cs" />
     <Compile Include="DemoData\Dictionaries.cs" />
+    <Compile Include="DemoData\DictionariesCache.cs" />
+    <Compile Include="DemoData\DictionariesInstance.cs" />
+    <Compile Include="DemoData\InvalidXmlConverter.cs" />
+    <Compile Include="DemoData\SDCRecord.cs" />
+    <Compile Include="DemoData\Tm_Dictionary.cs" />
+    <Compile Include="DemoData\Tm_DictionaryItem.cs" />
+    <Compile Include="DemoData\XStreamDateTimeConverter.cs" />
+    <Compile Include="DemoData\XStreamFactory.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="ViewModels\AddressAutocompleteViewModel.cs" />
     <Compile Include="ViewModels\AddressViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\RealAddressViewModel.cs" />
     <Compile Include="Views\AddressView.xaml.cs">
       <DependentUpon>AddressView.xaml</DependentUpon>
     </Compile>
@@ -136,6 +154,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="DemoData\dictionariesCacheOptimized">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

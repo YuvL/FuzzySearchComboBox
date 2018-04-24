@@ -51,6 +51,9 @@
   <ItemGroup>
     <Compile Include="FuzzySearchComboBox\ActualHeigthConverter.cs" />
     <Compile Include="FuzzySearchComboBox\BaseConverter.cs" />
+    <Compile Include="FuzzySearchComboBox\GroupRelationships\DCrelation.cs" />
+    <Compile Include="FuzzySearchComboBox\GroupRelationships\GroupRelationships.cs" />
+    <Compile Include="FuzzySearchComboBox\GroupRelationships\SDCrelation.cs" />
     <Compile Include="FuzzySearchComboBox\ItemType.cs" />
     <Compile Include="FuzzySearchComboBox\LoggingMessages.cs" />
     <Compile Include="FuzzySearchComboBox\WeakReferenceCollection.cs" />
